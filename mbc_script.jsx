@@ -17,7 +17,7 @@ var win = new Window("palette", "MBC", undefined);
     var locateBump = win.add("button", undefined, "Locate bumper");
     var locateSub = win.add("button", undefined, "Locate subscribe button");
     var locateClips = win.add("button", undefined, "Locate clips for end bumper");
-    var locateGrid = winadd("button", undefined, "Locate grid for end bumper");
+    var locateGrid = win.add("button", undefined, "Locate grid for end bumper");
     
     
  win.center();
@@ -123,5 +123,5 @@ var win = new Window("palette", "MBC", undefined);
 ********************************************/
 locateBump.onClick = locBump;
 locateSub.onClick = locSub;
-locateClips = locClip;
-locateGrid = locGrid;
+locateClips.onClick = locClip;
+locateGrid.onClick = locGrid;
