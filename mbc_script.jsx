@@ -14,11 +14,15 @@
 ****************************/
 var win = new Window("palette", "MBC", undefined);
     var groupOne = win.add("group", undefined, "Controls");
-    var locateBump = win.add("button", undefined, "Locate bumper");
-    var locateSub = win.add("button", undefined, "Locate subscribe button");
-    var locateClips = win.add("button", undefined, "Locate clips for end bumper");
-    var locateGrid = win.add("button", undefined, "Locate grid for end bumper");
+        groupOne.orientation = "column";
+    var locateBump = groupOne.add("button", undefined, "Locate bumper");
+    var locateSub = groupOne.add("button", undefined, "Locate subscribe button");
+    var locateClips = groupOne.add("button", undefined, "Locate clips for end bumper");
+    var locateGrid = groupOne.add("button", undefined, "Locate grid for end bumper");
     
+    var groupTwo = win.add("group", undefined, "Control2");
+        groupTwo.orientation = "column";
+    var createEverything = groupTwo.add("button", undefined, "Create everything!");
     
  win.center();
  win.show();
@@ -53,21 +57,66 @@ var win = new Window("palette", "MBC", undefined);
         
         }
 
+/****************************************************
+    **************************************************
+    Master function to call all creation functions
+    **************************************************
+*****************************************************/
+    function creator(){
+        
+        
+        
+        
+        
+        
+        
+        
+        }
+
+
+
 /*****************************
     create all solids
 ******************************/
 
     //fade out
-
+    function createFade(){
+        
+        
+        }
+    
     //number matte
+    function createNumMatte(){
+        
+        
+        }
     
     //rating matte
+    function createRatingMatte(){
+        
+        
+        }
     
     //end bumper matte
+    function createBumpMatte(){
+        
+        
+        
+        }
     
     //splatter1
+    function createSplat1(){
+        
+        
+        }
     
     //splatter2
+    function createSplat2(){
+        
+        
+        }
+    
+    
     
  /*******************************
      create all text layers
@@ -125,3 +174,4 @@ locateBump.onClick = locBump;
 locateSub.onClick = locSub;
 locateClips.onClick = locClip;
 locateGrid.onClick = locGrid;
+createEverything.onClick = creator;
