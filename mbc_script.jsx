@@ -15,7 +15,7 @@
     ***********************************************************
 *************************************************************/
 var a = app.project;
-var cur = activeItem;
+var cur = app.project.activeItem;
 
 /****************************
     draw GUI
@@ -99,6 +99,11 @@ var win = new Window("palette", "MBC", undefined);
 
     //fade out
     function createFade(){
+        //addSolid //////verify brief duration! 2 seconds 12 frames
+          var fadeOut = cur.layers.addSolid([0,0,0], "Fade Out", 1280, 720, 1, 2.5);
+        
+        //animate opacity
+    //   fadeOut.expression
         
         
         }
