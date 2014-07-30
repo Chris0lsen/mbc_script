@@ -9,6 +9,14 @@
  ****
  ************************************************************/
 
+/*************************************************************
+    ***********************************************************
+    declare global variables
+    ***********************************************************
+*************************************************************/
+var a = app.project;
+var cur = activeItem;
+
 /****************************
     draw GUI
 ****************************/
@@ -64,12 +72,22 @@ var win = new Window("palette", "MBC", undefined);
 *****************************************************/
     function creator(){
         
-        
-        
-        
-        
-        
-        
+        createFade();
+        createNumMatte();
+        createRatingMatte();
+        createBumpMatte();
+        createSplat1();
+        createSplat2();
+        createBC();
+        createCount();
+        createRating();
+        createTotal();
+        createSub();
+        createNumHolder();
+        createPrecompText();
+        createPrecompNumber();
+        createPrecompCount();
+        createPrecompSub();
         
         }
 
@@ -123,29 +141,80 @@ var win = new Window("palette", "MBC", undefined);
  ********************************/
 
     //BODY COUNT:
-
+    function createBC(){
+        
+        
+        }
+    
     //Counter
+    function createCount(){
+        
+        
+        }
 
     //Rating
-
+    function createRating(){
+        
+        
+        
+        }
+    
     //Total count
-
+    function createTotal(){
+        
+        
+        }
+    
     //Subscribe
-
+    function createSub(){
+        
+        
+        }
+    
     //numberHolder
-
+    function createNumHolder(){
+        
+        
+        }
+    
+    
+    
+    
 /*****************************
     create all precomps
  ****************************/
 
+////// NOTE:
+////// Be sure to observe how precomping items affects their position in the project.
+////// Is it best to precomp then add, or add then precomp?
+
     //text
-
+    function createPrecompText(){
+        
+        
+        }
+    
     //number
-
+    function createPrecompNumber(){
+        
+        
+        }
+    
     //count
+    function createPrecompCount(){
+        
+        
+        }
 
     //sub_button
-
+    function createPrecompSub(){
+        
+        
+        }
+    
+    
+    
+    
 /****************************************************
     Add effects and expressions to 'text' precomp
 *****************************************************/
