@@ -12,21 +12,46 @@
 /****************************
     draw GUI
 ****************************/
-
+var win = new Window("palette", "MBC", undefined);
+    var groupOne = win.add("group", undefined, "Controls");
+    var locateBump = win.add("button", undefined, "Locate bumper");
+    var locateSub = win.add("button", undefined, "Locate subscribe button");
+    var locateClips = win.add("button", undefined, "Locate clips for end bumper");
+    var locateGrid = winadd("button", undefined, "Locate grid for end bumper");
+    
+    
+ win.center();
+ win.show();
 
 
 /*****************************
     locate necessary files
 *****************************/
     //locate bumper on fs
-
+    function locBump(){
+        alert ("Locate Bumper Button Pressed", "locBump");
+        
+        
+        }
     //locate subscribe button on fs
-
+    function locSub(){
+        alert("Locate Subcribe button pressed", "locSub");
+        
+        
+        }
     //locate clips for end bumper on fs
+    function locClip(){
+        alert("Locate clips button pressed", "locClip");
+        
+        
+        }
 
     //locate grid for end bumper on fs
-
-
+    function locGrid(){
+        alert("Locate grid button pressed", "locGrid");
+        
+        
+        }
 
 /*****************************
     create all solids
@@ -87,3 +112,16 @@
 /****************************************************
     Add effects and expressions to 'sub_button' precomp
 *****************************************************/
+
+
+
+
+
+
+/********************************************
+    onClick controllers
+********************************************/
+locateBump.onClick = locBump;
+locateSub.onClick = locSub;
+locateClips = locClip;
+locateGrid = locGrid;
