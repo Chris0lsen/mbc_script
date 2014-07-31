@@ -92,6 +92,8 @@ var win = new Window("palette", "MBC", undefined);
         createPrecompCount();
         createPrecompSub();
         createPrecompEnd();
+        countEffects();
+        reorderLayers();
             
             app.endUndoGroup("Creator");
         }
@@ -107,13 +109,21 @@ var win = new Window("palette", "MBC", undefined);
         //addSolid //////verify brief duration! 2 seconds 12 frames
           var fadeOut = cur.layers.addSolid([0,0,0], "Fade Out", 1280, 720, 1, 2.5);
         
-        //animate opacity
-        fadeOut.opacity.setValueAtTime(0,0);
-        fadeOut.opacity.setValueAtTime(2.5, 100);
+        
         
         //place layer at the end of footage
             //get  end of footage
+            var fadeEnd = cur.layer(2).outPoint;
+            $.writeln("Did we get it? " + cur.layer(2).outPoint);
             //set end of fadeOut to end of footage
+            fadeOut.outPoint = fadeEnd;
+            $.writeln("out points set?");
+            var fadeStart = cur.layer(2).outPoint - 2.5;
+            fadeOut.inPoint = fadeStart;
+            
+            //animate opacity
+        fadeOut.opacity.setValueAtTime(fadeOut.inPoint,0);
+        fadeOut.opacity.setValueAtTime(fadeOut.outPoint, 100);
         
         }
     
@@ -316,19 +326,89 @@ var win = new Window("palette", "MBC", undefined);
 
     //BODY COUNT:
     function createBC(){
-        var bc = cur. layers.addText("Body Count: ");
+        var bc = cur.layers.addText("BODY COUNT:");
         //Remember to define font, size, position, etc.
         
+        var textProp = bc.property("Source Text");
+        var textDoc = textProp.value;
+        bcText = "BODY COUNT:";
+        textDoc.resetCharStyle();
+        textDoc.fontSize = 117;
+        textDoc.fillColor = [1, 1, 1];
+        textDoc.font = "TradeGothic LT Bold";
+        textDoc.text = bcText;
+        textDoc.justification = ParagraphJustification.LEFT_JUSTIFY;
+        textDoc.tracking = 0;
+        textProp.setValue(textDoc);
+       
+        bc.transform.position.setValue([245.4,628.2]);
+        bc.transform.anchorPoint.setValue([160,-10]);
+       
         bc.comment = "COUNTER";
         }
     
     //Counter
     function createCount(){
         var counter = cur.layers.addText();
-        //Remember to add expression here for source text! 
+        counter.name = "counter";
         
+        var countProp = counter.property("Source Text");
+        var countDoc = countProp.value;
+        countDoc.resetCharStyle();
+        countDoc.fontSize = 117;
+        countDoc.fillColor = [1, 1, 1];
+        countDoc.font = "TradeGothic LT Bold";
+        countDoc.justification = ParagraphJustification.LEFT_JUSTIFY;
+        countDoc.tracking = 0;
+        countProp.setValue(countDoc);
+       
+        counter.transform.position.setValue([761.2,638.6]);
+      
+      var glowA = cur.layers.addSolid([1,234/255,94/255], "Glow A Color", 1280,720,1);
+            glowA.Effects.addProperty("Color Control");  
+            glowA.property("Effects").property("Color Control").property(1).setValue([1,(234/255),(94/255),1]);
+            glowA.property("Transform").property("Opacity").setValue(0);
+     
+     var glowB = cur.layers.addSolid([218/255,41/255,41/255], "Glow B Color", 1280,720,1);
+             glowB.Effects.addProperty("Color Control");
+             glowB.property("Effects").property("Color Control").property(1).setValue([(218/255),(41/255),(41/255),1]);
+             glowB.property("Transform").property("Opacity").setValue(0)
+        
+         var glow1 = counter.Effects.addProperty("Glow");
+         var glow2 = counter.Effects.addProperty("Glow");
+         
+//add this next line later, or else it will deactivate when moved into the precomp!      
+      //  counter.property("Source Text").expression = "c = MBC_Comp.layer(\"Footage\"); count = 0; for (i=1;i<=c.marker.numKeys;i++) { if (c.marker.key(i).time > time ) break; count++;} count";
+                                          
+                                                                                
+         counter.property("Effects").property("Glow").property(1).setValue(2);    
+         counter.property("Effects").property("Glow").property(2).setValue(60);    
+           counter.property("Effects").property("Glow").property(3).setValue(27);    
+            counter.property("Effects").property("Glow").property(4).setValue(1.82);    
+             counter.property("Effects").property("Glow").property(5).setValue(2);    
+              counter.property("Effects").property("Glow").property(6).setValue(3);    
+                counter.property("Effects").property("Glow").property(7).setValue(2);    
+                 counter.property("Effects").property("Glow").property(8).setValue(3);
+                 counter.property("Effects").property("Glow").property(9).setValue(1); 
+                 counter.property("Effects").property("Glow").property(10).setValue(0); 
+               counter.property("Effects").property("Glow").property(12).expression = "thisComp.layer(\"Glow A Color\").effect(\"Color Control\")(\"Color\")"; 
+             counter.property("Effects").property("Glow").property(13).expression = "thisComp.layer(\"Glow B Color\").effect(\"Color Control\")(\"Color\")"; 
+                 counter.property("Effects").property("Glow").property(14).setValue(1); 
+                 
+            counter.property("Effects").property("Glow 2").property(6).setValue(3);
+            counter.property("Effects").property("Glow 2").property(7).setValue(2);
+            counter.property("Effects").property("Glow 2").property(8).setValue(3);
+            counter.property("Effects").property("Glow 2").property(9).setValue(1);
+            counter.property("Effects").property("Glow 2").property(10).setValue(0);
+            counter.property("Effects").property("Glow 2").property(12).expression = "[0,0,0,0]";
+            counter.property("Effects").property("Glow 2").property(14).setValue(1);
+         
+            /*   
+*/
+         glowA.comment = "COUNTER";
+         glowB.comment = "COUNTER";
         counter.comment = "COUNTER";
-        $.writeln(counter.comment);
+        
         }
 
     //Rating
@@ -359,13 +439,14 @@ var win = new Window("palette", "MBC", undefined);
     //numberHolder
     function createNumHolder(){
         var numHolder = cur.layers.addText();
-        // I don't even remember what this does.
+        // Holds total for use in end bumper
+       numHolder.name = "Number Holder";
+        
+       numHolder.property("Source Text").expression = "num = comp(\"MBC_Comp\").layer(\"Footage\").marker.numKeys;"
+        
+       numHolder.comment = "NUMBER";
         
         
-            numHolder.comment = "NUMBER";
-        
-        
-        alert("all good");
         }
     
     
@@ -395,7 +476,8 @@ var win = new Window("palette", "MBC", undefined);
         }  
       
        var numComp = cur.layers.precompose(numSelection, "Number PreComp", true);
-        
+        numComp.width = 1280;
+        numComp.height = 720;
         }  
     
     //text
@@ -411,6 +493,8 @@ var win = new Window("palette", "MBC", undefined);
         }  
       
        var textComp = cur.layers.precompose(textSelection, "Text PreComp", true);
+        textComp.width = 1280;
+        textComp.height = 720;
       
         }
     
@@ -428,7 +512,11 @@ var win = new Window("palette", "MBC", undefined);
             }
         }
         
-         var countComp = cur.layers.precompose(countSelection, "Counter PreComp", true);      
+         var countComp = cur.layers.precompose(countSelection, "Counter PreComp", true);     
+       //  $.writeln(countComp.name);
+       countComp.width = 1280;
+       countComp.height = 720;
+
         }
 
     //sub_button
@@ -446,6 +534,8 @@ var win = new Window("palette", "MBC", undefined);
         
         
                var subComp = cur.layers.precompose(subSelection, "Subscribe PreComp", true);
+               subComp.width = 1280;
+               subComp.height = 720;
         }
     
     
@@ -464,6 +554,8 @@ var win = new Window("palette", "MBC", undefined);
         
         
                var endComp = cur.layers.precompose(endSelection, "End PreComp", true);
+               endComp.width = 1280;
+               endComp.height = 720;
         }
     
     
@@ -479,6 +571,63 @@ var win = new Window("palette", "MBC", undefined);
 /****************************************************
     Add effects and expressions to 'count' precomp
 *****************************************************/
+function countEffects(){
+  //  $.writeln(cur.layer.countComp.name);
+    for (j=1; j < a.numItems;j++){
+        if (a.item(j).name == "Counter PreComp" ){
+           //   $.writeln("Did that work?");
+            var countCompLocal = a.item(j);
+            $.writeln(countCompLocal.name);
+            }
+        }
+ 
+  /* for (j=1;j<countCompLocal.numLayers;j++){
+       if (countCompLocal.layer(j).name == "counter"){
+            var counterLocal = countCompLocal.layer(j);
+        }
+    }*/
+
+$.writeln(countCompLocal.numLayers);
+var counterLocal = countCompLocal.layer(3);
+    counterLocal.property("Source Text").expression = "c = comp(\"MBC_Comp\").layer(\"Footage\"); count = 0; for (i=1;i<=c.marker.numKeys;i++) { if (c.marker.key(i).time > time ) break; count++;} count";
+    counterLocal.property("Effects").property("Glow").property(2).expression = "t=1;\
+x=0;\
+c=comp(\"MBC_Comp\").layer(\"Footage\");\
+if (c.marker.numKeys > 0){\
+  x=c.marker.nearestKey(time).index;\
+  if (c.marker.key(x).time > time) x--;\
+}\
+if (x>0) t = time - c.marker.key(x).time;\
+  amp = 100; \
+  decay = 3.0; \
+  scaleFact = (105 - amp  / Math.exp(decay * t)); \
+  scaleFact;"
+  
+    counterLocal.property("Transform").property("Scale").expression = "\
+  n = 0;\
+  t = 0;\
+c=comp(\"MBC_Comp\").layer(\"Footage\");\
+  if (c.marker.numKeys > 0){ \
+      n = c.marker.nearestKey(time).index; \
+      if (c.marker.key(n).time > time) n--; \
+  } \
+  if (n > 0) t = time - c.marker.key(n).time; \
+  amp = 45; \
+  freq = 5; \
+  decay = 7.0; \
+  angle = freq * 2 * Math.PI * t; \
+  scaleFact = (100 + amp * Math.sin(angle) / Math.exp(decay * t)) / 100; \
+  [value[0] * scaleFact, value[1] / scaleFact];"
+  
+//Need to add expression to shut off glow intensity while threshold = 100  
+  counterLocal.property("Effects").property("Glow").property(4).expression = "x=2;\
+if (effect(\"Glow\")(\"Glow Threshold\").value > 85){\
+x=linear(0.5,2.0,0.0);\
+} else {\
+x=2;\
+}";
+    $.writeln(counterLocal.name);
+}
 
 /****************************************************
     Add effects and expressions to 'sub_button' precomp
@@ -488,8 +637,13 @@ var win = new Window("palette", "MBC", undefined);
     Add effects and expressions to 'end' precomp
 *****************************************************/
 
-
-
+/****************************************************
+    Place layers in proper order
+*****************************************************/
+function reorderLayers(){
+    
+    $.writeln("Reorder Layers");
+    }
 
 /********************************************
     onClick controllers
