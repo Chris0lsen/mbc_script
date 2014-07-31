@@ -94,6 +94,7 @@ var win = new Window("palette", "MBC", undefined);
         createPrecompEnd();
         countEffects();
         textEffects();
+        endEffects();
         reorderLayers();
             
             app.endUndoGroup("Creator");
@@ -470,6 +471,20 @@ var rateProp = rating.property("Source Text");
     function createSub(){
         var subscribe = cur.layers.addText("Subscribe");
         //Position, Rotation, Scale
+        subscribe.Effects.addProperty("Glow");
+        subscribe.property("Effects").property("Glow").property(1).setValue(1);
+        subscribe.property("Effects").property("Glow").property(2).setValue(13);
+        subscribe.property("Effects").property("Glow").property(3).setValue(8);
+        subscribe.property("Effects").property("Glow").property(4).setValue(.9);
+        subscribe.property("Effects").property("Glow").property(5).setValue(2);
+        subscribe.property("Effects").property("Glow").property(6).setValue(3);
+        subscribe.property("Effects").property("Glow").property(7).setValue(2);
+        subscribe.property("Effects").property("Glow").property(8).setValue(3);
+        subscribe.property("Effects").property("Glow").property(13).setValue([0,0,0,0]);
+        
+        subscribe.property("Transform").property("Position").setValue([120,580]);
+        subscribe.property("Transform").property("Scale").setValue([79,79]);
+        subscribe.property("Transform").property("Rotation").setValue(-13);
         
         subscribe.comment = "SUB";
         }
@@ -663,29 +678,6 @@ function textEffects(){
 }
 
 
-/*
-    Adobe After Effects 8.0 Keyframe Data
-
-	Units Per Second	23.976
-	Source Width	1280
-	Source Height	720
-	Source Pixel Aspect Ratio	1
-	Comp Pixel Aspect Ratio	1
-
-Effects	CC Mr. Mercury #1	Blob Birth Size #15
-	Frame		
-		0.149994	
-
-Effects	CC Mr. Mercury #1	Blob Death Size #16
-	Frame		
-		0.5	
-
-
-End of Keyframe Data
-
-    
-    
-    */
 
 /****************************************************
     Add effects and expressions to 'number' precomp
@@ -737,13 +729,9 @@ c=comp(\"MBC_Comp\").layer(\"Footage\");\
   [value[0] * scaleFact, value[1] / scaleFact];"
   
 //Need to add expression to shut off glow intensity while threshold = 100  
-  counterLocal.property("Effects").property("Glow").property(4).expression = "x=2;\
-if (effect(\"Glow\")(\"Glow Threshold\").value > 85){\
-x=linear(0.5,2.0,0.0);\
-} else {\
-x=2;\
-}";
-  
+  counterLocal.property("Effects").property("Glow").property(4).expression = "x = effect(\"Glow\")(\"Glow Threshold\");\
+y = x/100;\
+z = 1/y - 1;";
 }
 
 /****************************************************
@@ -753,6 +741,25 @@ x=2;\
 /****************************************************
     Add effects and expressions to 'end' precomp
 *****************************************************/
+function endEffects(){
+    
+    for (j=1; j < a.numItems;j++){
+        if (a.item(j).name == "End PreComp" ){
+            var endCompLocal = a.item(j);
+            }
+        }
+ 
+    var sCompLocal =  cur.layer(1).copyToComp(endCompLocal);
+        cur.layer(1).remove();
+   var tCompLocal = cur.layer(3).copyToComp(endCompLocal);    
+        cur.layer(3).remove();
+    
+    var tCount = endCompLocal.layer(1);
+    var sp2 = endCompLocal.layer(2);
+    var sp1 = endCompLocal.layer(3);
+    var bMatte = endCompLayer(4);
+    
+    }
 
 /****************************************************
     Place layers in proper order
