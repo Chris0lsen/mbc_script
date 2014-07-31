@@ -4,7 +4,7 @@
  **** Description: "Movie Body Counts" script for internal 
  ****                         AdKarma use. Streamlines creation of
  ****                         videos for Movie Body Counts channel.
- **** Last revised: 7/30/2014
+ **** Last revised: 7/31/2014
  **** 
  ****
  ************************************************************/
@@ -93,6 +93,7 @@ var win = new Window("palette", "MBC", undefined);
         createPrecompSub();
         createPrecompEnd();
         countEffects();
+        textEffects();
         reorderLayers();
             
             app.endUndoGroup("Creator");
@@ -114,10 +115,10 @@ var win = new Window("palette", "MBC", undefined);
         //place layer at the end of footage
             //get  end of footage
             var fadeEnd = cur.layer(2).outPoint;
-            $.writeln("Did we get it? " + cur.layer(2).outPoint);
+      
             //set end of fadeOut to end of footage
             fadeOut.outPoint = fadeEnd;
-            $.writeln("out points set?");
+      
             var fadeStart = cur.layer(2).outPoint - 2.5;
             fadeOut.inPoint = fadeStart;
             
@@ -151,7 +152,8 @@ var win = new Window("palette", "MBC", undefined);
         numMatte.property("Effects").property("CC Mr. Mercury").property(11).setValue(1);
         numMatte.property("Effects").property("CC Mr. Mercury").property(12).setValue(68/100);
         numMatte.property("Effects").property("CC Mr. Mercury").property(13).setValue(3);
-        numMatte.property("Effects").property("CC Mr. Mercury").property(14).setValue(0.15);
+        numMatte.property("Effects").property("CC Mr. Mercury").property(14).setValue(0.1);
+        numMatte.property("Effects").property("CC Mr. Mercury").property(15).setValue(0.5);
      
          //specify arguments for roughen edges
          numMatte.property("Effects").property("Roughen Edges").property(1).setValue(4);
@@ -189,7 +191,8 @@ var win = new Window("palette", "MBC", undefined);
         ratingMatte.property("Effects").property("CC Mr. Mercury").property(11).setValue(1);
         ratingMatte.property("Effects").property("CC Mr. Mercury").property(12).setValue(68/100);
         ratingMatte.property("Effects").property("CC Mr. Mercury").property(13).setValue(3);
-        ratingMatte.property("Effects").property("CC Mr. Mercury").property(14).setValue(0.15);
+        ratingMatte.property("Effects").property("CC Mr. Mercury").property(14).setValue(0.1);
+        ratingMatte.property("Effects").property("CC Mr. Mercury").property(15).setValue(0.5);
      
          //specify arguments for roughen edges
          ratingMatte.property("Effects").property("Roughen Edges").property(1).setValue(4);
@@ -415,7 +418,42 @@ var win = new Window("palette", "MBC", undefined);
     function createRating(){
         var rating = cur.layers.addText("Rating: \n");
         //Remember to add text for 
-        
+            var rGlowA = cur.layers.addSolid([135/255,0,0], "Rating Matte Glow Color A", 1280, 720,1);
+            var rGlowB = cur.layers.addSolid([180/255,0,0], "Rating Matte Glow Color B", 1280, 720,1);
+            rGlowA.Effects.addProperty("Color Control");
+            rGlowB.Effects.addProperty("Color Control");
+                rGlowA.property("Effects").property("Color Control").property(1).setValue([135/255,0,0]);
+                rGlowB.property("Effects").property("Color Control").property(1).setValue([180/255,0,0]);
+            rGlowA.property("Transform").property("Opacity").setValue(0);
+            rGlowB.property("Transform").property("Opacity").setValue(0);
+            
+          var rGlow = rating.Effects.addProperty("Glow");
+            
+            rating.property("Effects").property("Glow").property(1).setValue(2);
+            rating.property("Effects").property("Glow").property(2).setValue(80);
+            rating.property("Effects").property("Glow").property(3).setValue(142);
+            rating.property("Effects").property("Glow").property(4).setValue(3.4);
+            rating.property("Effects").property("Glow").property(5).setValue(2);
+            rating.property("Effects").property("Glow").property(6).setValue(3);
+            rating.property("Effects").property("Glow").property(7).setValue(2);
+            rating.property("Effects").property("Glow").property(8).setValue(3);
+            rating.property("Effects").property("Glow").property(9).setValue(1);
+            rating.property("Effects").property("Glow").property(10).setValue(0);
+            rating.property("Effects").property("Glow").property(12).expression = "thisComp.layer(\"Rating Matte Glow Color A\").effect(\"Color Control\")(\"Color\")";
+            rating.property("Effects").property("Glow").property(13).expression = "thisComp.layer(\"Rating Matte Glow Color B\").effect(\"Color Control\")(\"Color\")";
+            rating.property("Effects").property("Glow").property(14).setValue(1);
+ 
+//center text
+var rateProp = rating.property("Source Text");
+        var rateDoc = rateProp.value;
+        rateDoc.resetCharStyle();
+        rateDoc.font = "TradeGothic LT Bold";
+        rateDoc.fontSize = 117;
+        rateDoc.justification = ParagraphJustification.CENTER_JUSTIFY;
+        rateProp.setValue(rateDoc);
+            
+        rGlowA.comment = "TEXT";
+        rGlowB.comment = "TEXT";
         rating.comment = "TEXT";
         }
     
@@ -425,7 +463,7 @@ var win = new Window("palette", "MBC", undefined);
             // Reposition and scale. Does this need anything else?
         
         
-        total.comment = "TEXT";
+        total.comment = "END";
         }
     
     //Subscribe
@@ -478,6 +516,9 @@ var win = new Window("palette", "MBC", undefined);
        var numComp = cur.layers.precompose(numSelection, "Number PreComp", true);
         numComp.width = 1280;
         numComp.height = 720;
+        
+        numComp.comment = "numComp";
+     
         }  
     
     //text
@@ -513,7 +554,7 @@ var win = new Window("palette", "MBC", undefined);
         }
         
          var countComp = cur.layers.precompose(countSelection, "Counter PreComp", true);     
-       //  $.writeln(countComp.name);
+   
        countComp.width = 1280;
        countComp.height = 720;
 
@@ -564,6 +605,88 @@ var win = new Window("palette", "MBC", undefined);
     Add effects and expressions to 'text' precomp
 *****************************************************/
 
+function textEffects(){
+    
+    for (j=1;j<a.numItems;j++){
+        if (a.item(j).name == "Text PreComp"){
+            var textCompLocal = a.item(j);
+            }
+       // else if (a.item(j).comment == "numComp"){
+       //    var numCompLocal = a.item(j);
+        //    }
+        }
+    
+        
+    
+    var numCompLocal = cur.layer(1).copyToComp(textCompLocal);
+    cur.layer(1).remove();
+    
+    var glowBLocal = textCompLocal.layer(2);
+    var glowALocal = textCompLocal.layer(3); 
+    var numberLocal = textCompLocal.layer(6);
+    var ratingLocal = textCompLocal.layer(5);
+    var rateTextLocal = textCompLocal.layer(4);
+    var totalLocal = textCompLocal.layer(1);
+    
+    glowALocal.moveToEnd();
+    glowBLocal.moveToEnd();
+    numberLocal.moveToBeginning();
+    totalLocal.moveAfter(numberLocal);
+    ratingLocal.moveAfter(totalLocal);
+    rateTextLocal.moveAfter(ratingLocal);
+
+    numberLocal.startTime = -3;
+    ratingLocal.startTime = -3;
+    
+    totalLocal.trackMatteType = TrackMatteType.ALPHA;
+    rateTextLocal.trackMatteType = TrackMatteType.ALPHA;
+    
+    rateTextLocal.property("Transform").property("Position").setValue([640,620]);
+    rateTextLocal.property("Transform").property("Anchor Point").setValue([250,0]);
+    totalLocal.property("Transform").property("Position").setValue([640,514]);
+    
+    totalLocal.Effects.addProperty("Glow");
+            totalLocal.property("Effects").property("Glow").property(1).setValue(2);
+            totalLocal.property("Effects").property("Glow").property(2).setValue(80);
+            totalLocal.property("Effects").property("Glow").property(3).setValue(142);
+            totalLocal.property("Effects").property("Glow").property(4).setValue(3.4);
+            totalLocal.property("Effects").property("Glow").property(5).setValue(2);
+            totalLocal.property("Effects").property("Glow").property(6).setValue(3);
+            totalLocal.property("Effects").property("Glow").property(7).setValue(2);
+            totalLocal.property("Effects").property("Glow").property(8).setValue(3);
+            totalLocal.property("Effects").property("Glow").property(9).setValue(1);
+            totalLocal.property("Effects").property("Glow").property(10).setValue(0);
+            totalLocal.property("Effects").property("Glow").property(12).expression = "thisComp.layer(\"Rating Matte Glow Color A\").effect(\"Color Control\")(\"Color\")";
+            totalLocal.property("Effects").property("Glow").property(13).expression = "thisComp.layer(\"Rating Matte Glow Color B\").effect(\"Color Control\")(\"Color\")";
+            totalLocal.property("Effects").property("Glow").property(14).setValue(1);
+    
+}
+
+
+/*
+    Adobe After Effects 8.0 Keyframe Data
+
+	Units Per Second	23.976
+	Source Width	1280
+	Source Height	720
+	Source Pixel Aspect Ratio	1
+	Comp Pixel Aspect Ratio	1
+
+Effects	CC Mr. Mercury #1	Blob Birth Size #15
+	Frame		
+		0.149994	
+
+Effects	CC Mr. Mercury #1	Blob Death Size #16
+	Frame		
+		0.5	
+
+
+End of Keyframe Data
+
+    
+    
+    */
+
 /****************************************************
     Add effects and expressions to 'number' precomp
 *****************************************************/
@@ -572,22 +695,16 @@ var win = new Window("palette", "MBC", undefined);
     Add effects and expressions to 'count' precomp
 *****************************************************/
 function countEffects(){
-  //  $.writeln(cur.layer.countComp.name);
+
     for (j=1; j < a.numItems;j++){
         if (a.item(j).name == "Counter PreComp" ){
-           //   $.writeln("Did that work?");
+ 
             var countCompLocal = a.item(j);
-            $.writeln(countCompLocal.name);
+       
             }
         }
- 
-  /* for (j=1;j<countCompLocal.numLayers;j++){
-       if (countCompLocal.layer(j).name == "counter"){
-            var counterLocal = countCompLocal.layer(j);
-        }
-    }*/
 
-$.writeln(countCompLocal.numLayers);
+
 var counterLocal = countCompLocal.layer(3);
     counterLocal.property("Source Text").expression = "c = comp(\"MBC_Comp\").layer(\"Footage\"); count = 0; for (i=1;i<=c.marker.numKeys;i++) { if (c.marker.key(i).time > time ) break; count++;} count";
     counterLocal.property("Effects").property("Glow").property(2).expression = "t=1;\
@@ -626,7 +743,7 @@ x=linear(0.5,2.0,0.0);\
 } else {\
 x=2;\
 }";
-    $.writeln(counterLocal.name);
+  
 }
 
 /****************************************************
