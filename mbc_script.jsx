@@ -4,7 +4,7 @@
  **** Description: "Movie Body Counts" script for internal 
  ****                         AdKarma use. Streamlines creation of
  ****                         videos for Movie Body Counts channel.
- **** Last revised: 7/31/2014
+ **** Last revised: 8/4/2014
  **** 
  ****
  ************************************************************/
@@ -41,27 +41,41 @@ var win = new Window("palette", "MBC", undefined);
 *****************************/
     //locate bumper on fs
     function locBump(){
-        alert ("Locate Bumper Button Pressed", "locBump");
-        
-        
+
+         app.beginUndoGroup("Bump");
+        var mbcBump = a.importFileWithDialog();
+         mbcBump[0].name = "Front Bumper";
+         mbcBump[0].comment = "BUMP";
+          app.endUndoGroup("Bump");
         }
     //locate subscribe button on fs
     function locSub(){
-        alert("Locate Subcribe button pressed", "locSub");
-        
+
+         app.beginUndoGroup("Sub");
+        var subGfx = a.importFileWithDialog();
+        subGfx[0].name = "Subscribe Logo";
+         app.endUndoGroup("Sub");
         
         }
     //locate clips for end bumper on fs
     function locClip(){
-        alert("Locate clips button pressed", "locClip");
-        
-        
+
+        app.beginUndoGroup("Clips");
+            var clipFile = a.importFileWithDialog();
+            for ( i=0;i<clipFile.length;i++){
+                clipFile[i].name = "End Clip " + (i+1);
+                clipFile[i].comment = "CLIP";
+                }
+           app.endUndoGroup("Clips"); 
         }
 
     //locate grid for end bumper on fs
     function locGrid(){
-        alert("Locate grid button pressed", "locGrid");
-        
+
+         app.beginUndoGroup("Grid");
+        var gridFile = a.importFileWithDialog();
+        gridFile[0].name = "End Bumper Grid";
+         app.endUndoGroup("Grid");
         
         }
 
@@ -95,8 +109,10 @@ var win = new Window("palette", "MBC", undefined);
         countEffects();
         textEffects();
         endEffects();
-        reorderLayers();
-            
+        subEffects();
+        adjustTiming();
+        reorderLayers();   
+        
             app.endUndoGroup("Creator");
         }
 
@@ -109,24 +125,31 @@ var win = new Window("palette", "MBC", undefined);
     //fade out
     function createFade(){
         //addSolid //////verify brief duration! 2 seconds 12 frames
-          var fadeOut = cur.layers.addSolid([0,0,0], "Fade Out", 1280, 720, 1, 2.5);
+          var fadeOut = cur.layers.addSolid([0,0,0], "Fade Out", 1280, 720, 1, 1);
         
-        
-        
-        //place layer at the end of footage
-            //get  end of footage
-            var fadeEnd = cur.layer(2).outPoint;
+        for (j=1;j<=cur.numLayers;j++){
+            if (cur.layer(j).name == "Footage"){
+                var footage = cur.layer(j);
+                }
+            }
+     //   $.writeln(footage.name);
+       //place layer at the end of footage
+    /*        //get  end of footage
+            var fadeEnd = footage.outPoint;
       
             //set end of fadeOut to end of footage
             fadeOut.outPoint = fadeEnd;
       
-            var fadeStart = cur.layer(2).outPoint - 2.5;
-            fadeOut.inPoint = fadeStart;
+            var fadeStart = footage.outPoint - 1;
+        //    fadeOut.inPoint = fadeStart;
             
+        //    fadeOut.startTime = fadeStart;
+            
+
             //animate opacity
-        fadeOut.opacity.setValueAtTime(fadeOut.inPoint,0);
+        fadeOut.opacity.setValueAtTime(fadeStart,0);
         fadeOut.opacity.setValueAtTime(fadeOut.outPoint, 100);
-        
+        */
         }
     
     //number matte
@@ -249,25 +272,25 @@ var win = new Window("palette", "MBC", undefined);
     
     //splatter1
     function createSplat1(){
-            var splatter1 = cur.layers.addSolid([1,1,1], "Splatter 1", 1280, 720,1, 6.5);
+            var splatter1 = cur.layers.addSolid([1,0,0], "Splatter 1", 1280, 720,1, 6.5);
         
             splatter1.Effects.addProperty("CC Mr. Mercury");
             splatter1.Effects.addProperty("Tint");
             splatter1.Effects.addProperty("Fast Blur");
         
-        splatter1.property("Effects").property("CC Mr. Mercury").property(1).setValue(46);
+        splatter1.property("Effects").property("CC Mr. Mercury").property(1).setValue(54);
         splatter1.property("Effects").property("CC Mr. Mercury").property(2).setValue(33);
         splatter1.property("Effects").property("CC Mr. Mercury").property(3).setValue([640,360]);
         splatter1.property("Effects").property("CC Mr. Mercury").property(4).setValue(0);
         splatter1.property("Effects").property("CC Mr. Mercury").property(5).setValue(0);
-        splatter1.property("Effects").property("CC Mr. Mercury").property(6).setValueAtTime(0,7.09);
-        splatter1.property("Effects").property("CC Mr. Mercury").property(6).setValueAtTime(1/24,0);
+        splatter1.property("Effects").property("CC Mr. Mercury").property(6).setValueAtTime(0,100);
+        splatter1.property("Effects").property("CC Mr. Mercury").property(6).setValueAtTime(1,0);
         splatter1.property("Effects").property("CC Mr. Mercury").property(7).setValue(5.5);
         splatter1.property("Effects").property("CC Mr. Mercury").property(8).setValue(0.1);
         splatter1.property("Effects").property("CC Mr. Mercury").property(9).setValue(2);
         splatter1.property("Effects").property("CC Mr. Mercury").property(10).setValue(0.7);
         splatter1.property("Effects").property("CC Mr. Mercury").property(11).setValue(1);
-        splatter1.property("Effects").property("CC Mr. Mercury").property(12).setValue(6/100);
+        splatter1.property("Effects").property("CC Mr. Mercury").property(12).setValue(2/100);
         splatter1.property("Effects").property("CC Mr. Mercury").property(13).setValue(3);
         splatter1.property("Effects").property("CC Mr. Mercury").property(14).setValue(0.2);
         splatter1.property("Effects").property("CC Mr. Mercury").property(15).setValue(0.2);
@@ -278,7 +301,7 @@ var win = new Window("palette", "MBC", undefined);
         
         splatter1.property("Effects").property("Fast Blur").property(1).setValue(10);
 
-      
+      splatter1.startTime = -3;
 
         
             splatter1.comment = "END";
@@ -286,26 +309,26 @@ var win = new Window("palette", "MBC", undefined);
     
     //splatter2
     function createSplat2(){
-                var splatter2 = cur.layers.addSolid([1,1,1], "Splatter 2", 1280, 720,1, 6.5);
-
-
+                var splatter2 = cur.layers.addSolid([1,0,0], "Splatter 2", 1280, 720,1, 6.5);
+        
+   
             splatter2.Effects.addProperty("CC Mr. Mercury");
             splatter2.Effects.addProperty("Tint");
             splatter2.Effects.addProperty("Fast Blur");
         
-        splatter2.property("Effects").property("CC Mr. Mercury").property(1).setValue(46);
-        splatter2.property("Effects").property("CC Mr. Mercury").property(2).setValue(33);
+        splatter2.property("Effects").property("CC Mr. Mercury").property(1).setValue(65);
+        splatter2.property("Effects").property("CC Mr. Mercury").property(2).setValue(65);
         splatter2.property("Effects").property("CC Mr. Mercury").property(3).setValue([640,360]);
         splatter2.property("Effects").property("CC Mr. Mercury").property(4).setValue(0);
         splatter2.property("Effects").property("CC Mr. Mercury").property(5).setValue(0);
-        splatter2.property("Effects").property("CC Mr. Mercury").property(6).setValueAtTime(0,7.09);
-        splatter2.property("Effects").property("CC Mr. Mercury").property(6).setValueAtTime(1/24,0);
+        splatter2.property("Effects").property("CC Mr. Mercury").property(6).setValueAtTime(0,300);
+        splatter2.property("Effects").property("CC Mr. Mercury").property(6).setValueAtTime(1,0);
         splatter2.property("Effects").property("CC Mr. Mercury").property(7).setValue(5.5);
         splatter2.property("Effects").property("CC Mr. Mercury").property(8).setValue(0.2);
         splatter2.property("Effects").property("CC Mr. Mercury").property(9).setValue(2);
         splatter2.property("Effects").property("CC Mr. Mercury").property(10).setValue(0);
         splatter2.property("Effects").property("CC Mr. Mercury").property(11).setValue(2);
-        splatter2.property("Effects").property("CC Mr. Mercury").property(12).setValue(4/100);
+        splatter2.property("Effects").property("CC Mr. Mercury").property(12).setValue(2/100);
         splatter2.property("Effects").property("CC Mr. Mercury").property(13).setValue(3);
         splatter2.property("Effects").property("CC Mr. Mercury").property(14).setValue(0.2);
         splatter2.property("Effects").property("CC Mr. Mercury").property(15).setValue(0.2);
@@ -316,7 +339,8 @@ var win = new Window("palette", "MBC", undefined);
         
         splatter2.property("Effects").property("Fast Blur").property(1).setValue(15);
         splatter2.property("Effects").property("Fast Blur").property(3).setValue(1);
-
+    
+        splatter2.startTime = -3;
 
 
                 splatter2.comment = "END";
@@ -449,13 +473,17 @@ var rateProp = rating.property("Source Text");
         var rateDoc = rateProp.value;
         rateDoc.resetCharStyle();
         rateDoc.font = "TradeGothic LT Bold";
-        rateDoc.fontSize = 117;
+        rateDoc.fontSize = 104;
         rateDoc.justification = ParagraphJustification.CENTER_JUSTIFY;
         rateProp.setValue(rateDoc);
+            
+                rating.property("Transform").property("Position").setValue([510,620,0]);
             
         rGlowA.comment = "TEXT";
         rGlowB.comment = "TEXT";
         rating.comment = "TEXT";
+        
+      
         }
     
     //Total count
@@ -463,7 +491,14 @@ var rateProp = rating.property("Source Text");
         var total = cur.layers.addText("Total Count");
             // Reposition and scale. Does this need anything else?
         
-        
+        var rateProp = total.property("Source Text");
+        var rateDoc = rateProp.value;
+        rateDoc.resetCharStyle();
+        rateDoc.font = "TradeGothic LT Bold";
+        rateDoc.fontSize = 117;
+        rateDoc.justification = ParagraphJustification.CENTER_JUSTIFY;
+        rateProp.setValue(rateDoc);
+        total.property("Transform").property("Position").setValue([659,401]);
         total.comment = "END";
         }
     
@@ -486,6 +521,7 @@ var rateProp = rating.property("Source Text");
         subscribe.property("Transform").property("Scale").setValue([79,79]);
         subscribe.property("Transform").property("Rotation").setValue(-13);
         
+         
         subscribe.comment = "SUB";
         }
     
@@ -494,8 +530,15 @@ var rateProp = rating.property("Source Text");
         var numHolder = cur.layers.addText();
         // Holds total for use in end bumper
        numHolder.name = "Number Holder";
-        
+        var rateProp = numHolder.property("Source Text");
+        var rateDoc = rateProp.value;
+        rateDoc.resetCharStyle();
+        rateDoc.font = "TradeGothic LT Bold";
+        rateDoc.fontSize = 117;
+        rateDoc.justification = ParagraphJustification.CENTER_JUSTIFY;
+        rateProp.setValue(rateDoc);
        numHolder.property("Source Text").expression = "num = comp(\"MBC_Comp\").layer(\"Footage\").marker.numKeys;"
+
         
        numHolder.comment = "NUMBER";
         
@@ -551,6 +594,7 @@ var rateProp = rating.property("Source Text");
        var textComp = cur.layers.precompose(textSelection, "Text PreComp", true);
         textComp.width = 1280;
         textComp.height = 720;
+        textComp.duration = 16.5;
       
         }
     
@@ -592,6 +636,22 @@ var rateProp = rating.property("Source Text");
                var subComp = cur.layers.precompose(subSelection, "Subscribe PreComp", true);
                subComp.width = 1280;
                subComp.height = 720;
+               
+   for (i=1;i<=a.numItems;i++){
+                if (a.item(i).name == "Subscribe Logo"){
+                   var subLogo = subComp.layers.add(a.item(i));
+                }
+            }        
+        subLogo.moveToEnd();
+        subLogo.property("Transform").property("Scale").setValue([44,44]);
+        subLogo.property("Transform").property("Position").setValue([264,495,0]);
+        subLogo.parent = subComp.layer(1);
+               
+          /*    for (i=0;i<a.numItems;i++){
+                    if (a.item(i).name == "Subscribe Logo"){
+                        a.item(i).copyToComp(subComp);
+                        }
+                    }*/
         }
     
     
@@ -612,6 +672,14 @@ var rateProp = rating.property("Source Text");
                var endComp = cur.layers.precompose(endSelection, "End PreComp", true);
                endComp.width = 1280;
                endComp.height = 720;
+               endComp.duration = currentFormatToTime("00:00:16:10", 24,true);
+               /*
+                for (i=0;i<a.numItems;i++){
+                    if (a.item(i).comment == "CLIP"){
+                        a.item(i).copyToComp(endComp);
+                        }
+                    }*/
+               
         }
     
     
@@ -621,21 +689,24 @@ var rateProp = rating.property("Source Text");
 *****************************************************/
 
 function textEffects(){
-    
-    for (j=1;j<a.numItems;j++){
+    for (j=1;j<=a.numItems;j++){
         if (a.item(j).name == "Text PreComp"){
             var textCompLocal = a.item(j);
             }
-       // else if (a.item(j).comment == "numComp"){
+        //else if (a.item(j).name == "numComp"){
        //    var numCompLocal = a.item(j);
         //    }
         }
+
+        for (k=1; k<=cur.numLayers;k++){
+            if (cur.layer(k).name == "Number PreComp"){
+                cur.layer(k).copyToComp(textCompLocal);
+                cur.layer(k).remove();
+                }
+            }
     
-        
-    
-    var numCompLocal = cur.layer(1).copyToComp(textCompLocal);
-    cur.layer(1).remove();
-    
+  //  var numCompLocal = cur.layer(1).copyToComp(textCompLocal);
+   // cur.layer(1).remove();
     var glowBLocal = textCompLocal.layer(2);
     var glowALocal = textCompLocal.layer(3); 
     var numberLocal = textCompLocal.layer(6);
@@ -674,6 +745,27 @@ function textEffects(){
             totalLocal.property("Effects").property("Glow").property(12).expression = "thisComp.layer(\"Rating Matte Glow Color A\").effect(\"Color Control\")(\"Color\")";
             totalLocal.property("Effects").property("Glow").property(13).expression = "thisComp.layer(\"Rating Matte Glow Color B\").effect(\"Color Control\")(\"Color\")";
             totalLocal.property("Effects").property("Glow").property(14).setValue(1);
+    
+            rateTextLocal.property("Transform").property("Position").setValue([504,620,0])
+             rateTextLocal.property("Source Text").expression = "x = comp(\"Number PreComp\").layer(\"Number Holder\").text.sourceText;\
+if (x >= 1 && x < 10){\
+   x = \"Rating: Harmless\";\
+}else if (x >= 10 && x < 20){\
+   x = \"Rating: Dangerous\";\
+}else if (x >= 20 && x < 40){\
+   x = \"Rating: Bloodthirsty\";\
+}else if (x >= 40 && x < 81){\
+   x = \"Rating: Murderous\";\
+}else if (x >= 81 && x < 101){\
+   x = \"Rating: Mayhem\";\
+}else if (x >= 101 && x  < 1001){\
+   x = \"Rating: Armageddon\";\
+}else {\
+   x = \"Rating: Genocide\";\
+}";
+    
+         rateTextLocal.property("Transform").property("Opacity").setValueAtTime(10,100);
+         rateTextLocal.property("Transform").property("Opacity").setValueAtTime(11,0);
     
 }
 
@@ -737,36 +829,163 @@ z = 1/y - 1;";
 /****************************************************
     Add effects and expressions to 'sub_button' precomp
 *****************************************************/
+function subEffects(){
+              
+                      
+                
+    }
 
 /****************************************************
     Add effects and expressions to 'end' precomp
 *****************************************************/
 function endEffects(){
+        var endClips = a.items.addComp("End Clips", 1280, 720,1,6,24);
     
     for (j=1; j < a.numItems;j++){
         if (a.item(j).name == "End PreComp" ){
             var endCompLocal = a.item(j);
-            }
+         } else if (a.item(j).name == "Subscribe PreComp"){
+             var sCompLocal = a.item(j);
+         } else if (a.item(j).name == "Text PreComp"){
+             var tCompLocal = a.item(j);
+         } else if (a.item(j).comment == "CLIP"){
+                endClips.layers.add(a.item(j));
+          }
         }
- 
-    var sCompLocal =  cur.layer(1).copyToComp(endCompLocal);
-        cur.layer(1).remove();
-   var tCompLocal = cur.layer(3).copyToComp(endCompLocal);    
-        cur.layer(3).remove();
+    
+
+    for (k = 1; k < cur.numLayers; k++){
+        if (cur.layer(k).name == "Subscribe PreComp"){
+             cur.layer(k).copyToComp(endCompLocal);
+             cur.layer(k).remove();
+         } else if (cur.layer(k).name == "Text PreComp"){
+             cur.layer(k).copyToComp(endCompLocal);
+             cur.layer(k).remove();
+             }
+         }
     
     var tCount = endCompLocal.layer(1);
     var sp2 = endCompLocal.layer(2);
     var sp1 = endCompLocal.layer(3);
-    var bMatte = endCompLayer(4);
+    var bMatte = endCompLocal.layer(4);
+   bMatte.property("Transform").property("Scale").setValue([115,115]);
+    endCompLocal.layers.add(endClips);
     
-    }
+    //END CLIPS RESIZE AND POSITION
+    endClips.layer(1).property("Transform").property("Scale").setValue([25,25]);
+    endClips.layer(2).property("Transform").property("Scale").setValue([25,25]);
+    endClips.layer(3).property("Transform").property("Scale").setValue([25,25]);
+    endClips.layer(4).property("Transform").property("Scale").setValue([25,25]);
+    endClips.layer(5).property("Transform").property("Scale").setValue([25,25]);
+    endClips.layer(6).property("Transform").property("Scale").setValue([25,25]);
+   
+   endClips.layer(1).property("Transform").property("Position").setValue([687,368]);
+   endClips.layer(2).property("Transform").property("Position").setValue([687,608]);
+   endClips.layer(3).property("Transform").property("Position").setValue([687,133]);
+   endClips.layer(4).property("Transform").property("Position").setValue([1060,368]);
+   endClips.layer(5).property("Transform").property("Position").setValue([1060,608]);
+   endClips.layer(6).property("Transform").property("Position").setValue([1060,133]);
+   
+  endCompLocal.layer(1).startTime = currentFormatToTime("00:00:10:09",24,true);
+  
+  endCompLocal.layer(4).moveToEnd();
+  endCompLocal.layer(7).trackMatteType = TrackMatteType.ALPHA;
+  endCompLocal.layer(7).property("Transform").property("Position").setValue([667,400]);
+  
+  endCompLocal.motionBlur = true;
+  endCompLocal.layer(3).motionBlur = true;
+  endCompLocal.layer(3).property("Transform").property("Position").setValueAtTime(0,[640,840,0]);
+  endCompLocal.layer(3).property("Transform").property("Position").setValueAtTime(10.5,[640,840,0]);
+  endCompLocal.layer(3).property("Transform").property("Position").setValueAtTime(11,[640,305,0]);
+  
+   endCompLocal.layer(1).property("Transform").property("Opacity").setValueAtTime(10.5,0);
+   endCompLocal.layer(1) .property("Transform").property("Opacity").setValueAtTime(12,100);
+   
+endCompLocal.layer(6).property("Transform").property("Scale").setValue([115,115]);   
+   
+   endCompLocal.layer(7).property("Transform").property("Position").setValueAtTime(9,[667,400,0]);
+   endCompLocal.layer(7).property("Transform").property("Position").setValueAtTime(10.5,[280,150,0]);
+   endCompLocal.layer(7).property("Transform").property("Scale").setValueAtTime(9,[100,100]);
+   endCompLocal.layer(7).property("Transform").property("Scale").setValueAtTime(10.5,[50,50]);
+   
+   endCompLocal.layer(2).property("Transform").property("Position").setValueAtTime(9,[640,360,0]);
+   endCompLocal.layer(2).property("Transform").property("Position").setValueAtTime(10.5,[280,150,0]);
+   endCompLocal.layer(2).property("Transform").property("Scale").setValueAtTime(9,[100,100]);
+   endCompLocal.layer(2).property("Transform").property("Scale").setValueAtTime(10.5,[50,50]);
+   
+   for (i=1;i<a.numItems;i++){
+       if (a.item(i).name == "End Bumper Grid"){
+           var grid = a.item(i);
+           }
+       }
+    endCompLocal.layers.add(grid);
+    var gridLocal = endCompLocal.layer(1);
+    gridLocal.moveToEnd();
+    gridLocal.property("Transform").property("Position").setValue([641,397,0]);
+    gridLocal.property("Transform").property("Opacity").setValueAtTime(10.5,0);
+    gridLocal.property("Transform").property("Opacity").setValueAtTime(12,100);
+   
+ }
 
 /****************************************************
     Place layers in proper order
 *****************************************************/
 function reorderLayers(){
+    for (i=1;i<a.numItems;i++){
+        if (a.item(i).name == "Front Bumper"){
+            cur.layers.add(a.item(i));
+            }
+        }
+
+
+    }
+
+function adjustTiming(){
     
-    $.writeln("Reorder Layers");
+
+    //newDuration = cur.duration + 10:17 for front bumper + 16:10 for end bumper = 27:03 total
+    var newDuration = cur.duration + currentFormatToTime("00:00:27:03", 24, true);
+    cur.duration = newDuration;
+    //cur.duration.setVal(newDuration)
+    //or something like that
+    
+   // cur.layer(3).startTime += currentFormatToTime("00:00:10:17",24,true);
+    cur.layer(4).startTime += currentFormatToTime("00:00:10:17",24,true);
+    
+    cur.layer(3).duration = 2.5;
+    
+    
+            //place layer at the end of footage
+            //get  end of footage
+            var fadeEnd = cur.layer(4).outPoint;
+            var fadeOut = cur.layer(3);
+      
+            //set end of fadeOut to end of footage
+            cur.layer(3).outPoint = fadeEnd;
+      
+            var fadeStart = cur.layer(4).outPoint;
+            fadeOut.outPoint = fadeStart;
+            
+            //animate opacity
+        fadeOut.opacity.setValueAtTime(fadeOut.outPoint - 2.5,0);
+        fadeOut.opacity.setValueAtTime(fadeOut.outPoint, 100);
+        
+        //move fadeOut to top, screw up layer indices again
+        fadeOut.moveToBeginning();
+        
+        //move end bumper to end
+        cur.layer(2).startTime = fadeOut.outPoint;
+        
+        //set points for counter
+             cur.layer(3).property("Transform").property("Opacity").expression = "v=0;\
+                                                                                                        c=thisComp;\
+                                                                              if (c.layer(\"Footage\").active){\
+                                                                                                              v = 100;\
+                                                                                                                } else {\
+                                                                                                              v = 0;}";
+                          
+                cur.layer(3).startTime = cur.layer(4).inPoint;
+
     }
 
 /********************************************
