@@ -4,7 +4,7 @@
  **** Description: "Movie Body Counts" script for internal 
  ****                         AdKarma use. Streamlines creation of
  ****                         videos for Movie Body Counts channel.
- **** Last revised: 8/4/2014
+ **** Last revised: 8/8/2014
  **** 
  ****
  ************************************************************/
@@ -88,6 +88,8 @@ var win = new Window("palette", "MBC", undefined);
         
             //begin  undo group
             app.beginUndoGroup("Creator");
+
+        checkSettings();
         
         createFade();
         createNumMatte();
@@ -125,7 +127,7 @@ var win = new Window("palette", "MBC", undefined);
     //fade out
     function createFade(){
         //addSolid //////verify brief duration! 2 seconds 12 frames
-          var fadeOut = cur.layers.addSolid([0,0,0], "Fade Out", 1280, 720, 1, 1);
+          var fadeOut = cur.layers.addSolid([0,0,0], "Fade Out", 1920, 1080, 1, 1);
         
         for (j=1;j<=cur.numLayers;j++){
             if (cur.layer(j).name == "Footage"){
@@ -155,7 +157,7 @@ var win = new Window("palette", "MBC", undefined);
     //number matte
     function createNumMatte(){
          //addSolid
-        var numMatte = cur.layers.addSolid([1,1,1], "Number Matte", 1280, 720, 1);
+        var numMatte = cur.layers.addSolid([1,1,1], "Number Matte", 1920, 1080, 1);
     //   numMatte.isTrackMatte = true;
     ///    numMatte.trackMatteType.ALPHA;
         
@@ -196,7 +198,7 @@ var win = new Window("palette", "MBC", undefined);
     
     //rating matte
     function createRatingMatte(){
-        var ratingMatte = cur.layers.addSolid([1,1,1], "Rating Matte", 1280, 720, 1);
+        var ratingMatte = cur.layers.addSolid([1,1,1], "Rating Matte", 1920, 1080, 1);
 
         ratingMatte.Effects.addProperty("CC Mr. Mercury");
         ratingMatte.Effects.addProperty("Roughen Edges");
@@ -234,7 +236,7 @@ var win = new Window("palette", "MBC", undefined);
     
     //end bumper matte
     function createBumpMatte(){
-        var bumpMatte = cur.layers.addSolid([1,1,1], "Bumper Matte", 1280, 720, 1);
+        var bumpMatte = cur.layers.addSolid([1,1,1], "Bumper Matte", 1920, 1080, 1);
         
         
             bumpMatte.Effects.addProperty("CC Mr. Mercury");
@@ -272,7 +274,7 @@ var win = new Window("palette", "MBC", undefined);
     
     //splatter1
     function createSplat1(){
-            var splatter1 = cur.layers.addSolid([1,0,0], "Splatter 1", 1280, 720,1, 6.5);
+            var splatter1 = cur.layers.addSolid([1,0,0], "Splatter 1", 1920, 1080,1, 6.5);
         
             splatter1.Effects.addProperty("CC Mr. Mercury");
             splatter1.Effects.addProperty("Tint");
@@ -309,7 +311,7 @@ var win = new Window("palette", "MBC", undefined);
     
     //splatter2
     function createSplat2(){
-                var splatter2 = cur.layers.addSolid([1,0,0], "Splatter 2", 1280, 720,1, 6.5);
+                var splatter2 = cur.layers.addSolid([1,0,0], "Splatter 2", 1920, 1080,1, 6.5);
         
    
             splatter2.Effects.addProperty("CC Mr. Mercury");
@@ -361,7 +363,7 @@ var win = new Window("palette", "MBC", undefined);
         var textDoc = textProp.value;
         bcText = "BODY COUNT:";
         textDoc.resetCharStyle();
-        textDoc.fontSize = 117;
+        textDoc.fontSize = 160;
         textDoc.fillColor = [1, 1, 1];
         textDoc.font = "TradeGothic LT Bold";
         textDoc.text = bcText;
@@ -369,7 +371,7 @@ var win = new Window("palette", "MBC", undefined);
         textDoc.tracking = 0;
         textProp.setValue(textDoc);
        
-        bc.transform.position.setValue([245.4,628.2]);
+        bc.transform.position.setValue([234.4,947.2]);
         bc.transform.anchorPoint.setValue([160,-10]);
        
         bc.comment = "COUNTER";
@@ -383,21 +385,21 @@ var win = new Window("palette", "MBC", undefined);
         var countProp = counter.property("Source Text");
         var countDoc = countProp.value;
         countDoc.resetCharStyle();
-        countDoc.fontSize = 117;
+        countDoc.fontSize = 160;
         countDoc.fillColor = [1, 1, 1];
         countDoc.font = "TradeGothic LT Bold";
         countDoc.justification = ParagraphJustification.LEFT_JUSTIFY;
         countDoc.tracking = 0;
         countProp.setValue(countDoc);
        
-        counter.transform.position.setValue([761.2,638.6]);
+        counter.transform.position.setValue([992.2,956.2]);
       
-      var glowA = cur.layers.addSolid([1,234/255,94/255], "Glow A Color", 1280,720,1);
+      var glowA = cur.layers.addSolid([1,234/255,94/255], "Glow A Color", 1920,1080,1);
             glowA.Effects.addProperty("Color Control");  
             glowA.property("Effects").property("Color Control").property(1).setValue([1,(234/255),(94/255),1]);
             glowA.property("Transform").property("Opacity").setValue(0);
      
-     var glowB = cur.layers.addSolid([218/255,41/255,41/255], "Glow B Color", 1280,720,1);
+     var glowB = cur.layers.addSolid([218/255,41/255,41/255], "Glow B Color", 1920,1080,1);
              glowB.Effects.addProperty("Color Control");
              glowB.property("Effects").property("Color Control").property(1).setValue([(218/255),(41/255),(41/255),1]);
              glowB.property("Transform").property("Opacity").setValue(0)
@@ -443,8 +445,8 @@ var win = new Window("palette", "MBC", undefined);
     function createRating(){
         var rating = cur.layers.addText("Rating: \n");
         //Remember to add text for 
-            var rGlowA = cur.layers.addSolid([135/255,0,0], "Rating Matte Glow Color A", 1280, 720,1);
-            var rGlowB = cur.layers.addSolid([180/255,0,0], "Rating Matte Glow Color B", 1280, 720,1);
+            var rGlowA = cur.layers.addSolid([135/255,0,0], "Rating Matte Glow Color A", 1920, 1080,1);
+            var rGlowB = cur.layers.addSolid([180/255,0,0], "Rating Matte Glow Color B", 1920, 1080,1);
             rGlowA.Effects.addProperty("Color Control");
             rGlowB.Effects.addProperty("Color Control");
                 rGlowA.property("Effects").property("Color Control").property(1).setValue([135/255,0,0]);
@@ -572,8 +574,8 @@ var rateProp = rating.property("Source Text");
         }  
       
        var numComp = cur.layers.precompose(numSelection, "Number PreComp", true);
-        numComp.width = 1280;
-        numComp.height = 720;
+        numComp.width = 1920;
+        numComp.height = 1080;
         
         numComp.comment = "numComp";
      
@@ -592,8 +594,8 @@ var rateProp = rating.property("Source Text");
         }  
       
        var textComp = cur.layers.precompose(textSelection, "Text PreComp", true);
-        textComp.width = 1280;
-        textComp.height = 720;
+        textComp.width = 1920;
+        textComp.height = 1080;
         textComp.duration = 16.5;
       
         }
@@ -614,8 +616,8 @@ var rateProp = rating.property("Source Text");
         
          var countComp = cur.layers.precompose(countSelection, "Counter PreComp", true);     
    
-       countComp.width = 1280;
-       countComp.height = 720;
+       countComp.width = 1920;
+       countComp.height = 1080;
 
         }
 
@@ -634,8 +636,8 @@ var rateProp = rating.property("Source Text");
         
         
                var subComp = cur.layers.precompose(subSelection, "Subscribe PreComp", true);
-               subComp.width = 1280;
-               subComp.height = 720;
+               subComp.width = 1920;
+               subComp.height = 1080;
                
    for (i=1;i<=a.numItems;i++){
                 if (a.item(i).name == "Subscribe Logo"){
@@ -670,8 +672,8 @@ var rateProp = rating.property("Source Text");
         
         
                var endComp = cur.layers.precompose(endSelection, "End PreComp", true);
-               endComp.width = 1280;
-               endComp.height = 720;
+               endComp.width = 1920;
+               endComp.height = 1080;
                endComp.duration = currentFormatToTime("00:00:16:10", 24,true);
                /*
                 for (i=0;i<a.numItems;i++){
@@ -839,7 +841,7 @@ function subEffects(){
     Add effects and expressions to 'end' precomp
 *****************************************************/
 function endEffects(){
-        var endClips = a.items.addComp("End Clips", 1280, 720,1,6,24);
+        var endClips = a.items.addComp("End Clips", 1920, 1080,1,6,24);
     
     for (j=1; j < a.numItems;j++){
         if (a.item(j).name == "End PreComp" ){
@@ -934,6 +936,8 @@ function reorderLayers(){
     for (i=1;i<a.numItems;i++){
         if (a.item(i).name == "Front Bumper"){
             cur.layers.add(a.item(i));
+            //upscale 720 bumper for 1080 output...
+            cur.layer(1).property("Transform").property("Scale").setValue([150,150]);
             }
         }
 
@@ -987,6 +991,20 @@ function adjustTiming(){
                 cur.layer(3).startTime = cur.layer(4).inPoint;
 
     }
+
+function checkSettings(){
+    
+        //if footage layer isn't 1920X1080, upscale it
+        $.writeln("Hello");
+        
+        var footageLayer = cur.layer(1);
+        if (footageLayer.height != 1080){
+            var factor = footageLayer.height/1080;
+            factor = (1/factor)*100;
+            footageLayer.property("Transform").property("Scale").setValue([factor,factor]);
+    $.writeln("Any chance that worked?");
+    }
+}
 
 /********************************************
     onClick controllers
