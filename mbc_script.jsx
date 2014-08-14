@@ -4,7 +4,7 @@
  **** Description: "Movie Body Counts" script for internal 
  ****                         AdKarma use. Streamlines creation of
  ****                         videos for Movie Body Counts channel.
- **** Last revised: 8/8/2014
+ **** Last revised: 8/14/2014
  **** 
  ****
  ************************************************************/
@@ -17,17 +17,46 @@
 var a = app.project;
 var cur = app.project.activeItem;
 
+/*************************************************
+    BEFORE ANYTHING ELSE!!!
+    ename layers while the project is still mostly empty.
+    ***********************************************/
+function rename(){
+    
+        for (i=1;i<=a.numItems;i++){
+
+            if (a.item(i).typeName == "Footage"){
+
+                a.item(i).name = "Footage";
+                } else if (a.item(i).typeName == "Composition"){
+
+                    a.item(i).name = "MBC_Comp";
+                }
+        }
+        
+    }
+rename ();
+/****************************************************************
+    Find Typeface first.
+            On some machines, Trade Gothic is
+            two words, and on some, it's one. Make sure
+            You find the right typeface at the beginning!
+ *****************************************************************/
+
+
+
 /****************************
     draw GUI
 ****************************/
 var win = new Window("palette", "MBC", undefined);
     var groupOne = win.add("group", undefined, "Controls");
         groupOne.orientation = "column";
-    var locateBump = groupOne.add("button", undefined, "Locate bumper");
-    var locateSub = groupOne.add("button", undefined, "Locate subscribe button");
+   // var locateBump = groupOne.add("button", undefined, "Locate bumper");
+ //   var locateSub = groupOne.add("button", undefined, "Locate subscribe button");
     var locateClips = groupOne.add("button", undefined, "Locate clips for end bumper");
-    var locateGrid = groupOne.add("button", undefined, "Locate grid for end bumper");
-    
+ //   var locateAudio = groupOne.add("button",undefined, "Locate audio for end bumper");
+ //   var locateGrid = groupOne.add("button", undefined, "Locate grid for end bumper");
+  //  var locEverything = groupOne.add("button",undefined, "Locate folder with everything in it");
     var groupTwo = win.add("group", undefined, "Control2");
         groupTwo.orientation = "column";
     var createEverything = groupTwo.add("button", undefined, "Create everything!");
@@ -39,6 +68,50 @@ var win = new Window("palette", "MBC", undefined);
 /*****************************
     locate necessary files
 *****************************/
+/****************************************************************
+    ***
+    ***
+    ***   UPDATE FOR 8/11 BUILD:
+    ***     Currently trying to import ALL items within a GIVEN
+    ***     FOLDER and rename them ACCORDING TO THEIR
+    ***     TYPE. Also add MP3 file to imported collection.
+    ***
+    ***
+ ****************************************************************/
+
+function locStuff(){
+    
+
+    
+        var things = {
+            splat : { value:0, path: "c:\\mbc\\splat.png", name: "Subscribe Logo", comment: "SUB"},
+            grid : { value:1, path: "c:\\mbc\\grid.psd", name: "End Bumper Grid", comment: "END"},
+            bumper : { value:2, path: "c:\\mbc\\bumper.avi", name: "Front Bumper", comment: "BUMP"},
+            audio : { value:3, path: "c:\\mbc\\audio.mp3", name: "Audio", comment: "AUDIO"}
+            };
+    var tempThing;
+    var stuffOptions = new ImportOptions;
+
+    
+    for (var th in things){
+        var curThing = things[th];
+        stuffOptions.file = File(curThing.path);
+        tempThing = a.importFile(stuffOptions);
+        tempThing.name = curThing.name;
+
+        tempThing.comment = curThing.comment;
+        
+    }
+  
+        /*
+        var stuffOptions = new ImportOptions(File ("C:\\mbc"));
+        stuffOptions.sequence = true;
+         a.importFile(stuffOptions);
+        */
+
+    }
+
+/*
     //locate bumper on fs
     function locBump(){
 
@@ -57,16 +130,30 @@ var win = new Window("palette", "MBC", undefined);
          app.endUndoGroup("Sub");
         
         }
+        */
     //locate clips for end bumper on fs
     function locClip(){
 
         app.beginUndoGroup("Clips");
             var clipFile = a.importFileWithDialog();
+            
+            //HERE: if End Clip * already exists, continue from the enxt int
             for ( i=0;i<clipFile.length;i++){
                 clipFile[i].name = "End Clip " + (i+1);
                 clipFile[i].comment = "CLIP";
                 }
            app.endUndoGroup("Clips"); 
+        }
+/*
+    //locate audio for end bumper on fs
+    function locAudio(){
+
+        app.beginUndoGroup("Audio");
+            var clipFile = a.importFileWithDialog();
+                clipFile[0].name = "End Audio";
+                clipFile[0].comment = "AUDIO";
+          
+           app.endUndoGroup("Audio"); 
         }
 
     //locate grid for end bumper on fs
@@ -78,7 +165,7 @@ var win = new Window("palette", "MBC", undefined);
          app.endUndoGroup("Grid");
         
         }
-
+*/
 /****************************************************
     **************************************************
     Master function to call all creation functions
@@ -88,9 +175,9 @@ var win = new Window("palette", "MBC", undefined);
         
             //begin  undo group
             app.beginUndoGroup("Creator");
-
+      //  rename();
         checkSettings();
-        
+        locStuff();
         createFade();
         createNumMatte();
         createRatingMatte();
@@ -118,7 +205,23 @@ var win = new Window("palette", "MBC", undefined);
             app.endUndoGroup("Creator");
         }
 
+/*************************************************
+    rename existing layers
+    ***********************************************/
+function rename(){
+    
+        for (i=1;i<=a.numItems;i++){
 
+            if (a.item(i).typeName == "Footage"){
+
+                a.item(i).name = "Footage";
+                } else if (a.item(i).typeName == "Composition"){
+
+                    a.item(i).name = "MBC_Comp";
+                }
+        }
+        
+    }
 
 /*****************************
     create all solids
@@ -444,7 +547,17 @@ var win = new Window("palette", "MBC", undefined);
     //Rating
     function createRating(){
         var rating = cur.layers.addText("Rating: \n");
-        //Remember to add text for 
+        rating.property("Transform").property("Position").setValue([960,540,0]);
+        var ratingProp = rating.property("Source Text");
+        var ratingDoc = ratingProp.value;
+        ratingDoc.resetCharStyle();
+        ratingDoc.fontSize = 160;
+        ratingDoc.fillColor = [1, 1, 1];
+        ratingDoc.font = "TradeGothic LT Bold";
+        ratingDoc.justification = ParagraphJustification.LEFT_JUSTIFY;
+        ratingDoc.tracking = 0;
+        ratingProp.setValue(ratingDoc);
+        
             var rGlowA = cur.layers.addSolid([135/255,0,0], "Rating Matte Glow Color A", 1920, 1080,1);
             var rGlowB = cur.layers.addSolid([180/255,0,0], "Rating Matte Glow Color B", 1920, 1080,1);
             rGlowA.Effects.addProperty("Color Control");
@@ -517,9 +630,10 @@ var rateProp = rating.property("Source Text");
         subscribe.property("Effects").property("Glow").property(6).setValue(3);
         subscribe.property("Effects").property("Glow").property(7).setValue(2);
         subscribe.property("Effects").property("Glow").property(8).setValue(3);
+        subscribe.property("Effects").property("Glow").property(12).setValue([0,0,0,0]);
         subscribe.property("Effects").property("Glow").property(13).setValue([0,0,0,0]);
         
-        subscribe.property("Transform").property("Position").setValue([120,580]);
+        subscribe.property("Transform").property("Position").setValue([51,580]);
         subscribe.property("Transform").property("Scale").setValue([79,79]);
         subscribe.property("Transform").property("Rotation").setValue(-13);
         
@@ -597,7 +711,7 @@ var rateProp = rating.property("Source Text");
         textComp.width = 1920;
         textComp.height = 1080;
         textComp.duration = 16.5;
-      
+      //  textComp.property("Transform").property("Position").setValue([960,540]);
         }
     
   
@@ -615,8 +729,13 @@ var rateProp = rating.property("Source Text");
         }
         
          var countComp = cur.layers.precompose(countSelection, "Counter PreComp", true);     
-   
-       countComp.width = 1920;
+
+      countComp.duration += currentFormatToTime("00:00:10:16",24,true);
+      for(i=1;i<=countComp.numLayers;i++){
+          countComp.layer(i).outPoint +=11;
+          }
+
+  countComp.width = 1920;
        countComp.height = 1080;
 
         }
@@ -832,7 +951,7 @@ z = 1/y - 1;";
     Add effects and expressions to 'sub_button' precomp
 *****************************************************/
 function subEffects(){
-              
+    $.writeln("sub effects");          
                       
                 
     }
@@ -852,9 +971,11 @@ function endEffects(){
              var tCompLocal = a.item(j);
          } else if (a.item(j).comment == "CLIP"){
                 endClips.layers.add(a.item(j));
-          }
+          } else if (a.item(j).comment == "AUDIO"){
+                var aud = endClips.layers.add(a.item(j));
+           }
         }
-    
+    endClips.audioEnabled = false;
 
     for (k = 1; k < cur.numLayers; k++){
         if (cur.layer(k).name == "Subscribe PreComp"){
@@ -933,19 +1054,22 @@ endCompLocal.layer(6).property("Transform").property("Scale").setValue([115,115]
     Place layers in proper order
 *****************************************************/
 function reorderLayers(){
+
     for (i=1;i<a.numItems;i++){
         if (a.item(i).name == "Front Bumper"){
             cur.layers.add(a.item(i));
             //upscale 720 bumper for 1080 output...
             cur.layer(1).property("Transform").property("Scale").setValue([150,150]);
-            }
+            } else {
+               
+                }
         }
 
 
     }
 
 function adjustTiming(){
-    
+    $.writeln("adjust timing");
 
     //newDuration = cur.duration + 10:17 for front bumper + 16:10 for end bumper = 27:03 total
     var newDuration = cur.duration + currentFormatToTime("00:00:27:03", 24, true);
@@ -955,7 +1079,7 @@ function adjustTiming(){
     
    // cur.layer(3).startTime += currentFormatToTime("00:00:10:17",24,true);
     cur.layer(4).startTime += currentFormatToTime("00:00:10:17",24,true);
-    
+  //  cur.layer(4).outPoint = cur.layer(5).outPoint;
     cur.layer(3).duration = 2.5;
     
     
@@ -988,14 +1112,13 @@ function adjustTiming(){
                                                                                                                 } else {\
                                                                                                               v = 0;}";
                           
-                cur.layer(3).startTime = cur.layer(4).inPoint;
+                cur.layer(3).outPoint = cur.layer(4).outPoint;
 
     }
 
 function checkSettings(){
     
         //if footage layer isn't 1920X1080, upscale it
-        $.writeln("Hello");
         
         var footageLayer = cur.layer(1);
         if (footageLayer.height != 1080){
@@ -1009,8 +1132,12 @@ function checkSettings(){
 /********************************************
     onClick controllers
 ********************************************/
-locateBump.onClick = locBump;
-locateSub.onClick = locSub;
+
+//locateBump.onClick = locBump;
+//locateSub.onClick = locSub;
 locateClips.onClick = locClip;
-locateGrid.onClick = locGrid;
+//locateGrid.onClick = locGrid;
+//locateAudio.onClick = locAudio;
+//locEverything.onClick = locStuff;
+
 createEverything.onClick = creator;
