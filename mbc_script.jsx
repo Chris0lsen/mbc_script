@@ -22,16 +22,25 @@ var cur = app.project.activeItem;
     ename layers while the project is still mostly empty.
     ***********************************************/
 function rename(){
-    
+            var fNeedsRename = true;
+            var cNeedsRename = true;
+            for (i=1;i<=a.numItems;i++){
+                if (a.item(i).name == "Footage") fNeedsRename = false;
+                if (a.item(i).name == "MBC_Comp") cNeedsRename = false;
+           } 
         for (i=1;i<=a.numItems;i++){
+            
+            // IF a layer called "Footage" already exists,
+            // DO NOT rename any layers!
 
-            if (a.item(i).typeName == "Footage"){
-
-                a.item(i).name = "Footage";
-                } else if (a.item(i).typeName == "Composition"){
-
+                if (a.item(i).typeName == "Footage" && fNeedsRename == true){ 
+                     a.item(i).name = "Footage";
+               }         
+           
+                if (a.item(i).typeName == "Composition" && cNeedsRename == true){
                     a.item(i).name = "MBC_Comp";
                 }
+            
         }
         
     }
@@ -81,8 +90,6 @@ var win = new Window("palette", "MBC", undefined);
 
 function locStuff(){
     
-
-    
         var things = {
             splat : { value:0, path: "c:\\mbc\\splat.png", name: "Subscribe Logo", comment: "SUB"},
             grid : { value:1, path: "c:\\mbc\\grid.psd", name: "End Bumper Grid", comment: "END"},
@@ -98,18 +105,11 @@ function locStuff(){
         stuffOptions.file = File(curThing.path);
         tempThing = a.importFile(stuffOptions);
         tempThing.name = curThing.name;
-
         tempThing.comment = curThing.comment;
         
     }
-  
-        /*
-        var stuffOptions = new ImportOptions(File ("C:\\mbc"));
-        stuffOptions.sequence = true;
-         a.importFile(stuffOptions);
-        */
 
-    }
+}
 
 /*
     //locate bumper on fs
@@ -202,26 +202,9 @@ function locStuff(){
         adjustTiming();
         reorderLayers();   
         
-            app.endUndoGroup("Creator");
+            app.endUndoGroup();
         }
 
-/*************************************************
-    rename existing layers
-    ***********************************************/
-function rename(){
-    
-        for (i=1;i<=a.numItems;i++){
-
-            if (a.item(i).typeName == "Footage"){
-
-                a.item(i).name = "Footage";
-                } else if (a.item(i).typeName == "Composition"){
-
-                    a.item(i).name = "MBC_Comp";
-                }
-        }
-        
-    }
 
 /*****************************
     create all solids
@@ -547,16 +530,17 @@ function rename(){
     //Rating
     function createRating(){
         var rating = cur.layers.addText("Rating: \n");
-        rating.property("Transform").property("Position").setValue([960,540,0]);
+        
         var ratingProp = rating.property("Source Text");
         var ratingDoc = ratingProp.value;
         ratingDoc.resetCharStyle();
         ratingDoc.fontSize = 160;
         ratingDoc.fillColor = [1, 1, 1];
         ratingDoc.font = "TradeGothic LT Bold";
-        ratingDoc.justification = ParagraphJustification.LEFT_JUSTIFY;
+        ratingDoc.justification = ParagraphJustification.CENTER_JUSTIFY;
         ratingDoc.tracking = 0;
         ratingProp.setValue(ratingDoc);
+
         
             var rGlowA = cur.layers.addSolid([135/255,0,0], "Rating Matte Glow Color A", 1920, 1080,1);
             var rGlowB = cur.layers.addSolid([180/255,0,0], "Rating Matte Glow Color B", 1920, 1080,1);
@@ -588,12 +572,10 @@ var rateProp = rating.property("Source Text");
         var rateDoc = rateProp.value;
         rateDoc.resetCharStyle();
         rateDoc.font = "TradeGothic LT Bold";
-        rateDoc.fontSize = 104;
+        rateDoc.fontSize = 160;
         rateDoc.justification = ParagraphJustification.CENTER_JUSTIFY;
         rateProp.setValue(rateDoc);
-            
-                rating.property("Transform").property("Position").setValue([510,620,0]);
-            
+
         rGlowA.comment = "TEXT";
         rGlowB.comment = "TEXT";
         rating.comment = "TEXT";
@@ -610,10 +592,10 @@ var rateProp = rating.property("Source Text");
         var rateDoc = rateProp.value;
         rateDoc.resetCharStyle();
         rateDoc.font = "TradeGothic LT Bold";
-        rateDoc.fontSize = 117;
+        rateDoc.fontSize = 160;
         rateDoc.justification = ParagraphJustification.CENTER_JUSTIFY;
         rateProp.setValue(rateDoc);
-        total.property("Transform").property("Position").setValue([659,401]);
+        total.property("Transform").property("Position").setValue([960,400]);
         total.comment = "END";
         }
     
@@ -650,7 +632,7 @@ var rateProp = rating.property("Source Text");
         var rateDoc = rateProp.value;
         rateDoc.resetCharStyle();
         rateDoc.font = "TradeGothic LT Bold";
-        rateDoc.fontSize = 117;
+        rateDoc.fontSize = 160;
         rateDoc.justification = ParagraphJustification.CENTER_JUSTIFY;
         rateProp.setValue(rateDoc);
        numHolder.property("Source Text").expression = "num = comp(\"MBC_Comp\").layer(\"Footage\").marker.numKeys;"
@@ -850,7 +832,7 @@ function textEffects(){
     
     rateTextLocal.property("Transform").property("Position").setValue([640,620]);
     rateTextLocal.property("Transform").property("Anchor Point").setValue([250,0]);
-    totalLocal.property("Transform").property("Position").setValue([640,514]);
+    totalLocal.property("Transform").property("Position").setValue([960,382]);
     
     totalLocal.Effects.addProperty("Glow");
             totalLocal.property("Effects").property("Glow").property(1).setValue(2);
@@ -866,8 +848,9 @@ function textEffects(){
             totalLocal.property("Effects").property("Glow").property(12).expression = "thisComp.layer(\"Rating Matte Glow Color A\").effect(\"Color Control\")(\"Color\")";
             totalLocal.property("Effects").property("Glow").property(13).expression = "thisComp.layer(\"Rating Matte Glow Color B\").effect(\"Color Control\")(\"Color\")";
             totalLocal.property("Effects").property("Glow").property(14).setValue(1);
-    
-            rateTextLocal.property("Transform").property("Position").setValue([504,620,0])
+
+            rateTextLocal.property("Transform").property("Anchor Point").setValue([0,0]);
+            rateTextLocal.property("Transform").property("Position").setValue([960,540,0])
              rateTextLocal.property("Source Text").expression = "x = comp(\"Number PreComp\").layer(\"Number Holder\").text.sourceText;\
 if (x >= 1 && x < 10){\
    x = \"Rating: Harmless\";\
@@ -950,8 +933,7 @@ z = 1/y - 1;";
 /****************************************************
     Add effects and expressions to 'sub_button' precomp
 *****************************************************/
-function subEffects(){
-    $.writeln("sub effects");          
+function subEffects(){       
                       
                 
     }
@@ -961,8 +943,8 @@ function subEffects(){
 *****************************************************/
 function endEffects(){
         var endClips = a.items.addComp("End Clips", 1920, 1080,1,6,24);
-    
-    for (j=1; j < a.numItems;j++){
+
+    for (j=1; j <= a.numItems;j++){
         if (a.item(j).name == "End PreComp" ){
             var endCompLocal = a.item(j);
          } else if (a.item(j).name == "Subscribe PreComp"){
@@ -972,11 +954,12 @@ function endEffects(){
          } else if (a.item(j).comment == "CLIP"){
                 endClips.layers.add(a.item(j));
           } else if (a.item(j).comment == "AUDIO"){
-                var aud = endClips.layers.add(a.item(j));
+                var aud = a.item(j);
+          
            }
         }
-    endClips.audioEnabled = false;
-
+    
+    endCompLocal.layers.add(aud);
     for (k = 1; k < cur.numLayers; k++){
         if (cur.layer(k).name == "Subscribe PreComp"){
              cur.layer(k).copyToComp(endCompLocal);
@@ -992,8 +975,11 @@ function endEffects(){
     var sp1 = endCompLocal.layer(3);
     var bMatte = endCompLocal.layer(4);
    bMatte.property("Transform").property("Scale").setValue([115,115]);
+   
+   //Once endClips is added, immediately disable its audio
     endCompLocal.layers.add(endClips);
-    
+    var clips = endCompLocal.layer(1);
+    clips.audioEnabled = false;
     //END CLIPS RESIZE AND POSITION
     endClips.layer(1).property("Transform").property("Scale").setValue([25,25]);
     endClips.layer(2).property("Transform").property("Scale").setValue([25,25]);
@@ -1009,32 +995,40 @@ function endEffects(){
    endClips.layer(5).property("Transform").property("Position").setValue([1060,608]);
    endClips.layer(6).property("Transform").property("Position").setValue([1060,133]);
    
-  endCompLocal.layer(1).startTime = currentFormatToTime("00:00:10:09",24,true);
+    for (i=1;i<=endClips.numLayers;i++){
+        endClips.layer(i).startTime = -90;
+   }
+  clips.startTime = currentFormatToTime("00:00:10:09",24,true);
   
-  endCompLocal.layer(4).moveToEnd();
-  endCompLocal.layer(7).trackMatteType = TrackMatteType.ALPHA;
-  endCompLocal.layer(7).property("Transform").property("Position").setValue([667,400]);
+  bMatte.moveToEnd();
+  bMatte.trackMatteType = TrackMatteType.ALPHA;
+  bMatte.property("Transform").property("Position").setValue([667,400]);
   
   endCompLocal.motionBlur = true;
-  endCompLocal.layer(3).motionBlur = true;
-  endCompLocal.layer(3).property("Transform").property("Position").setValueAtTime(0,[640,840,0]);
-  endCompLocal.layer(3).property("Transform").property("Position").setValueAtTime(10.5,[640,840,0]);
-  endCompLocal.layer(3).property("Transform").property("Position").setValueAtTime(11,[640,305,0]);
+  var sub = endCompLocal.layer(2);
+  sub.motionBlur = true;
+  sub.property("Transform").property("Position").setValueAtTime(0,[960,1400,0]);
+  sub.property("Transform").property("Position").setValueAtTime(10.5,[960,1400,0]);
+  sub.property("Transform").property("Position").setValueAtTime(11,[960,860,0]);
   
-   endCompLocal.layer(1).property("Transform").property("Opacity").setValueAtTime(10.5,0);
-   endCompLocal.layer(1) .property("Transform").property("Opacity").setValueAtTime(12,100);
+   clips.property("Transform").property("Opacity").setValueAtTime(10.5,0);
+   clips.property("Transform").property("Opacity").setValueAtTime(12,100);
+   clips.property("Transform").property("Position").setValue([1440,784,0]);
+   clips.property("Transform").property("Scale").setValue([150,150]);
    
-endCompLocal.layer(6).property("Transform").property("Scale").setValue([115,115]);   
+   endCompLocal.layer(7).startTime = -1;
+   endCompLocal.layer(7).property("Transform").property("Scale").setValue([115,115]);   
    
-   endCompLocal.layer(7).property("Transform").property("Position").setValueAtTime(9,[667,400,0]);
-   endCompLocal.layer(7).property("Transform").property("Position").setValueAtTime(10.5,[280,150,0]);
-   endCompLocal.layer(7).property("Transform").property("Scale").setValueAtTime(9,[100,100]);
-   endCompLocal.layer(7).property("Transform").property("Scale").setValueAtTime(10.5,[50,50]);
+   endCompLocal.layer(8).property("Transform").property("Position").setValueAtTime(9,[960,540,0]);
+   endCompLocal.layer(8).property("Transform").property("Position").setValueAtTime(10.5,[440,150,0]);
+   endCompLocal.layer(8).property("Transform").property("Scale").setValueAtTime(9,[100,100]);
+   endCompLocal.layer(8).property("Transform").property("Scale").setValueAtTime(10.5,[50,50]);
    
-   endCompLocal.layer(2).property("Transform").property("Position").setValueAtTime(9,[640,360,0]);
-   endCompLocal.layer(2).property("Transform").property("Position").setValueAtTime(10.5,[280,150,0]);
-   endCompLocal.layer(2).property("Transform").property("Scale").setValueAtTime(9,[100,100]);
-   endCompLocal.layer(2).property("Transform").property("Scale").setValueAtTime(10.5,[50,50]);
+   var txt = endCompLocal.layer(3);
+   txt.property("Transform").property("Position").setValueAtTime(9,[960,860,0]);
+   txt.property("Transform").property("Position").setValueAtTime(10.5,[440,260,0]);
+   txt.property("Transform").property("Scale").setValueAtTime(9,[100,100]);
+   txt.property("Transform").property("Scale").setValueAtTime(10.5,[50,50]);
    
    for (i=1;i<a.numItems;i++){
        if (a.item(i).name == "End Bumper Grid"){
@@ -1043,10 +1037,12 @@ endCompLocal.layer(6).property("Transform").property("Scale").setValue([115,115]
        }
     endCompLocal.layers.add(grid);
     var gridLocal = endCompLocal.layer(1);
-    gridLocal.moveToEnd();
-    gridLocal.property("Transform").property("Position").setValue([641,397,0]);
+    gridLocal.property("Transform").property("Position").setValue([960,571,0]);
+    gridLocal.property("Transform").property("Scale").setValue([150,150]);
     gridLocal.property("Transform").property("Opacity").setValueAtTime(10.5,0);
     gridLocal.property("Transform").property("Opacity").setValueAtTime(12,100);
+    gridLocal.Effects.addProperty("Linear Color Key");
+    gridLocal.property("Effects").property("Linear Color Key").property(3).setValue([0,0,0]);
    
  }
 
@@ -1069,7 +1065,7 @@ function reorderLayers(){
     }
 
 function adjustTiming(){
-    $.writeln("adjust timing");
+
 
     //newDuration = cur.duration + 10:17 for front bumper + 16:10 for end bumper = 27:03 total
     var newDuration = cur.duration + currentFormatToTime("00:00:27:03", 24, true);
