@@ -4,7 +4,7 @@
  **** Description: "Movie Body Counts" script for internal 
  ****                         AdKarma use. Streamlines creation of
  ****                         videos for Movie Body Counts channel.
- **** Last revised: 8/14/2014
+ **** Last revised: 9/22/2014
  **** 
  ****
  ************************************************************/
@@ -16,6 +16,7 @@
 *************************************************************/
 var a = app.project;
 var cur = app.project.activeItem;
+var prePath = File("Z:\\Content\\Movie Body Counts\\Documents\\text.ffx");
 
 /*************************************************
     BEFORE ANYTHING ELSE!!!
@@ -60,12 +61,7 @@ rename ();
 var win = new Window("palette", "MBC", undefined);
     var groupOne = win.add("group", undefined, "Controls");
         groupOne.orientation = "column";
-   // var locateBump = groupOne.add("button", undefined, "Locate bumper");
- //   var locateSub = groupOne.add("button", undefined, "Locate subscribe button");
     var locateClips = groupOne.add("button", undefined, "Locate clips for end bumper");
- //   var locateAudio = groupOne.add("button",undefined, "Locate audio for end bumper");
- //   var locateGrid = groupOne.add("button", undefined, "Locate grid for end bumper");
-  //  var locEverything = groupOne.add("button",undefined, "Locate folder with everything in it");
     var groupTwo = win.add("group", undefined, "Control2");
         groupTwo.orientation = "column";
     var createEverything = groupTwo.add("button", undefined, "Create everything!");
@@ -91,10 +87,10 @@ var win = new Window("palette", "MBC", undefined);
 function locStuff(){
     
         var things = {
-            splat : { value:0, path: "c:\\mbc\\splat.png", name: "Subscribe Logo", comment: "SUB"},
-            grid : { value:1, path: "c:\\mbc\\grid.psd", name: "End Bumper Grid", comment: "END"},
-            bumper : { value:2, path: "c:\\mbc\\bumper.avi", name: "Front Bumper", comment: "BUMP"},
-            audio : { value:3, path: "c:\\mbc\\audio.mp3", name: "Audio", comment: "AUDIO"}
+            splat : { value:0, path: "Z:\\Content\\Movie Body Counts\\Documents\\splat.png", name: "Subscribe Logo", comment: "SUB"},
+            grid : { value:1, path: "Z:\\Content\\Movie Body Counts\\Documents\\grid.psd", name: "End Bumper Grid", comment: "END"},
+            bumper : { value:2, path: "Z:\\Content\\Movie Body Counts\\Documents\\bumper.avi", name: "Front Bumper", comment: "BUMP"},
+            audio : { value:3, path: "Z:\\Content\\Movie Body Counts\\Documents\\audio.mp3", name: "Audio", comment: "AUDIO"}
             };
     var tempThing;
     var stuffOptions = new ImportOptions;
@@ -111,61 +107,65 @@ function locStuff(){
 
 }
 
-/*
-    //locate bumper on fs
-    function locBump(){
 
-         app.beginUndoGroup("Bump");
-        var mbcBump = a.importFileWithDialog();
-         mbcBump[0].name = "Front Bumper";
-         mbcBump[0].comment = "BUMP";
-          app.endUndoGroup("Bump");
-        }
-    //locate subscribe button on fs
-    function locSub(){
-
-         app.beginUndoGroup("Sub");
-        var subGfx = a.importFileWithDialog();
-        subGfx[0].name = "Subscribe Logo";
-         app.endUndoGroup("Sub");
-        
-        }
-        */
     //locate clips for end bumper on fs
     function locClip(){
-
+        var endClips = new Array;
+            //Navigate to Diskstation        
+            var myFolder = new Folder("Z:\\Content\\Movie Body Counts\\Complete Videos\\");
         app.beginUndoGroup("Clips");
-            var clipFile = a.importFileWithDialog();
-            
-            //HERE: if End Clip * already exists, continue from the enxt int
-            for ( i=0;i<clipFile.length;i++){
-                clipFile[i].name = "End Clip " + (i+1);
-                clipFile[i].comment = "CLIP";
-                }
-           app.endUndoGroup("Clips"); 
-        }
-/*
-    //locate audio for end bumper on fs
-    function locAudio(){
 
-        app.beginUndoGroup("Audio");
-            var clipFile = a.importFileWithDialog();
-                clipFile[0].name = "End Audio";
-                clipFile[0].comment = "AUDIO";
-          
-           app.endUndoGroup("Audio"); 
-        }
-
-    //locate grid for end bumper on fs
-    function locGrid(){
-
-         app.beginUndoGroup("Grid");
-        var gridFile = a.importFileWithDialog();
-        gridFile[0].name = "End Bumper Grid";
-         app.endUndoGroup("Grid");
+            //get number of items in folder
+            $.writeln("Getting files...");
+            var finFiles  = myFolder.getFiles();
+            $.writeln("Got files.");
+            $.writeln("Adding to array...");
+            for (var i = 0; i < finFiles.length; i++){
+               // add to array
+                endClips[i] = finFiles[i];
+                $.writeln(finFiles[i]);
+            }
         
+            //get 6 random numbers
+             var chosenNums = [];
+             var nums = [0,0,0,0,0,0];
+             $.writeln("Choosing numbers...");
+            for (var i  = 0; i < 6; i++){           
+                var thisClip = Math.floor((Math.random() * endClips.length) + 1);
+                chosenNums[i] = thisClip;
+                 if(thisClip == nums[0] || thisClip == nums[1] || thisClip == nums[2]
+                    	|| thisClip == nums[3] || thisClip == nums[4] || thisClip == nums[5]){
+                    	$.writeln("The number is already in the array");
+                        i--;
+                      }else{
+                nums[i] = thisClip; //NEW 
+                } 
+                $.writeln("thisClip = " + thisClip);                
+                $.writeln("Contents of chosenNums: ");
+                $.writeln(chosenNums);              
+            }
+        
+          //import chosenNums
+            var clips = {
+                    one: {value:0, num: chosenNums[0], name: "End Clip 1", comment: "CLIP" },
+                    two: {value:0, num: chosenNums[1], name: "End Clip 2", comment: "CLIP" },
+                    three: {value:0, num: chosenNums[2], name: "End Clip 3", comment: "CLIP" },
+                    four: {value:0, num: chosenNums[3], name: "End Clip 4", comment: "CLIP" },
+                    five: {value:0, num: chosenNums[4], name: "End Clip 5", comment: "CLIP" },
+                    six: {value:0, num: chosenNums[5], name: "End Clip 6", comment: "CLIP" }
+                    };
+                var tempClip;
+                var clipOptions = new ImportOptions;
+             for (x in clips){
+                 var curClip = clips[x];
+                clipOptions.file = File(endClips[curClip.num]);
+                tempClip = a.importFile(clipOptions);
+                tempClip.name = curClip.name;
+                tempClip.comment = curClip.comment;
+              }
+           app.endUndoGroup(); 
         }
-*/
+
 /****************************************************
     **************************************************
     Master function to call all creation functions
@@ -176,6 +176,12 @@ function locStuff(){
             //begin  undo group
             app.beginUndoGroup("Creator");
       //  rename();
+        var cont =clipCheck();
+       $.writeln(cont);
+           if (cont == false) {
+               return;
+       }else{
+      
         checkSettings();
         locStuff();
         createFade();
@@ -201,7 +207,7 @@ function locStuff(){
         subEffects();
         adjustTiming();
         reorderLayers();   
-        
+        }
             app.endUndoGroup();
         }
 
@@ -220,32 +226,13 @@ function locStuff(){
                 var footage = cur.layer(j);
                 }
             }
-     //   $.writeln(footage.name);
-       //place layer at the end of footage
-    /*        //get  end of footage
-            var fadeEnd = footage.outPoint;
-      
-            //set end of fadeOut to end of footage
-            fadeOut.outPoint = fadeEnd;
-      
-            var fadeStart = footage.outPoint - 1;
-        //    fadeOut.inPoint = fadeStart;
-            
-        //    fadeOut.startTime = fadeStart;
-            
 
-            //animate opacity
-        fadeOut.opacity.setValueAtTime(fadeStart,0);
-        fadeOut.opacity.setValueAtTime(fadeOut.outPoint, 100);
-        */
         }
     
     //number matte
     function createNumMatte(){
          //addSolid
         var numMatte = cur.layers.addSolid([1,1,1], "Number Matte", 1920, 1080, 1);
-    //   numMatte.isTrackMatte = true;
-    ///    numMatte.trackMatteType.ALPHA;
         
         numMatte.Effects.addProperty("CC Mr. Mercury");
         numMatte.Effects.addProperty("Roughen Edges");
@@ -285,7 +272,7 @@ function locStuff(){
     //rating matte
     function createRatingMatte(){
         var ratingMatte = cur.layers.addSolid([1,1,1], "Rating Matte", 1920, 1080, 1);
-
+        ratingMatte.duration = 18;
         ratingMatte.Effects.addProperty("CC Mr. Mercury");
         ratingMatte.Effects.addProperty("Roughen Edges");
         //specify arguments for mr mercury
@@ -296,7 +283,7 @@ function locStuff(){
         ratingMatte.property("Effects").property("CC Mr. Mercury").property(5).setValue(0.03);
         ratingMatte.property("Effects").property("CC Mr. Mercury").property(6).setValueAtTime(0,7.09);
         ratingMatte.property("Effects").property("CC Mr. Mercury").property(6).setValueAtTime(1,0);
-        ratingMatte.property("Effects").property("CC Mr. Mercury").property(7).setValue(20.29);
+        ratingMatte.property("Effects").property("CC Mr. Mercury").property(7).setValue(12.6);
         ratingMatte.property("Effects").property("CC Mr. Mercury").property(8).setValue(0);
         ratingMatte.property("Effects").property("CC Mr. Mercury").property(9).setValue(0);
         ratingMatte.property("Effects").property("CC Mr. Mercury").property(10).setValue(2.5);
@@ -366,14 +353,14 @@ function locStuff(){
             splatter1.Effects.addProperty("Tint");
             splatter1.Effects.addProperty("Fast Blur");
         
-        splatter1.property("Effects").property("CC Mr. Mercury").property(1).setValue(54);
-        splatter1.property("Effects").property("CC Mr. Mercury").property(2).setValue(33);
-        splatter1.property("Effects").property("CC Mr. Mercury").property(3).setValue([640,360]);
+        splatter1.property("Effects").property("CC Mr. Mercury").property(1).setValue(115);
+        splatter1.property("Effects").property("CC Mr. Mercury").property(2).setValue(55);
+        splatter1.property("Effects").property("CC Mr. Mercury").property(3).setValue([960,540]);
         splatter1.property("Effects").property("CC Mr. Mercury").property(4).setValue(0);
         splatter1.property("Effects").property("CC Mr. Mercury").property(5).setValue(0);
         splatter1.property("Effects").property("CC Mr. Mercury").property(6).setValueAtTime(0,100);
         splatter1.property("Effects").property("CC Mr. Mercury").property(6).setValueAtTime(1,0);
-        splatter1.property("Effects").property("CC Mr. Mercury").property(7).setValue(5.5);
+        splatter1.property("Effects").property("CC Mr. Mercury").property(7).setValue(4.5);
         splatter1.property("Effects").property("CC Mr. Mercury").property(8).setValue(0.1);
         splatter1.property("Effects").property("CC Mr. Mercury").property(9).setValue(2);
         splatter1.property("Effects").property("CC Mr. Mercury").property(10).setValue(0.7);
@@ -404,9 +391,9 @@ function locStuff(){
             splatter2.Effects.addProperty("Tint");
             splatter2.Effects.addProperty("Fast Blur");
         
-        splatter2.property("Effects").property("CC Mr. Mercury").property(1).setValue(65);
-        splatter2.property("Effects").property("CC Mr. Mercury").property(2).setValue(65);
-        splatter2.property("Effects").property("CC Mr. Mercury").property(3).setValue([640,360]);
+        splatter2.property("Effects").property("CC Mr. Mercury").property(1).setValue(79);
+        splatter2.property("Effects").property("CC Mr. Mercury").property(2).setValue(71);
+        splatter2.property("Effects").property("CC Mr. Mercury").property(3).setValue([960,540]);
         splatter2.property("Effects").property("CC Mr. Mercury").property(4).setValue(0);
         splatter2.property("Effects").property("CC Mr. Mercury").property(5).setValue(0);
         splatter2.property("Effects").property("CC Mr. Mercury").property(6).setValueAtTime(0,300);
@@ -428,7 +415,7 @@ function locStuff(){
         splatter2.property("Effects").property("Fast Blur").property(1).setValue(15);
         splatter2.property("Effects").property("Fast Blur").property(3).setValue(1);
     
-        splatter2.startTime = -3;
+        splatter2.startTime = 3;
 
 
                 splatter2.comment = "END";
@@ -444,7 +431,7 @@ function locStuff(){
     function createBC(){
         var bc = cur.layers.addText("BODY COUNT:");
         //Remember to define font, size, position, etc.
-        
+        bc.applyPreset(prePath);
         var textProp = bc.property("Source Text");
         var textDoc = textProp.value;
         bcText = "BODY COUNT:";
@@ -457,17 +444,34 @@ function locStuff(){
         textDoc.tracking = 0;
         textProp.setValue(textDoc);
        
-        bc.transform.position.setValue([234.4,947.2]);
+        bc.transform.position.setValue([310.9,949.2]);
         bc.transform.anchorPoint.setValue([160,-10]);
        
         bc.comment = "COUNTER";
+        
+        var glow1 = bc.Effects.addProperty("Glow");        
+        
+         bc.property("Effects").property("Glow").property(1).setValue(2);    
+         bc.property("Effects").property("Glow").property(2).setValue(60);    
+         bc.property("Effects").property("Glow").property(3).setValue(27);    
+         bc.property("Effects").property("Glow").property(4).setValue(1);    
+         bc.property("Effects").property("Glow").property(5).setValue(2);    
+         bc.property("Effects").property("Glow").property(6).setValue(3);    
+         bc.property("Effects").property("Glow").property(7).setValue(2);    
+         bc.property("Effects").property("Glow").property(8).setValue(3);
+         bc.property("Effects").property("Glow").property(9).setValue(1); 
+         bc.property("Effects").property("Glow").property(10).setValue(0); 
+         bc.property("Effects").property("Glow").property(12).setValue([0,0,0]); 
+         bc.property("Effects").property("Glow").property(13).setValue([0,0,0]);
+         bc.property("Effects").property("Glow").property(14).setValue(1); 
+        
         }
     
     //Counter
     function createCount(){
         var counter = cur.layers.addText();
         counter.name = "counter";
-        
+        counter.applyPreset(prePath);
         var countProp = counter.property("Source Text");
         var countDoc = countProp.value;
         countDoc.resetCharStyle();
@@ -478,7 +482,7 @@ function locStuff(){
         countDoc.tracking = 0;
         countProp.setValue(countDoc);
        
-        counter.transform.position.setValue([992.2,956.2]);
+        counter.transform.position.setValue([1063.7,959.7]);
       
       var glowA = cur.layers.addSolid([1,234/255,94/255], "Glow A Color", 1920,1080,1);
             glowA.Effects.addProperty("Color Control");  
@@ -491,11 +495,7 @@ function locStuff(){
              glowB.property("Transform").property("Opacity").setValue(0)
         
          var glow1 = counter.Effects.addProperty("Glow");
-         var glow2 = counter.Effects.addProperty("Glow");
-         
-//add this next line later, or else it will deactivate when moved into the precomp!      
-      //  counter.property("Source Text").expression = "c = MBC_Comp.layer(\"Footage\"); count = 0; for (i=1;i<=c.marker.numKeys;i++) { if (c.marker.key(i).time > time ) break; count++;} count";
-                                          
+         var glow2 = counter.Effects.addProperty("Glow");                                        
                                                                                 
          counter.property("Effects").property("Glow").property(1).setValue(2);    
          counter.property("Effects").property("Glow").property(2).setValue(60);    
@@ -530,7 +530,7 @@ function locStuff(){
     //Rating
     function createRating(){
         var rating = cur.layers.addText("Rating: \n");
-        
+        rating.duration = 18;
         var ratingProp = rating.property("Source Text");
         var ratingDoc = ratingProp.value;
         ratingDoc.resetCharStyle();
@@ -571,7 +571,7 @@ function locStuff(){
 var rateProp = rating.property("Source Text");
         var rateDoc = rateProp.value;
         rateDoc.resetCharStyle();
-        rateDoc.font = "TradeGothic LT Bold";
+         rateDoc.font = "TradeGothic LT Bold";
         rateDoc.fontSize = 160;
         rateDoc.justification = ParagraphJustification.CENTER_JUSTIFY;
         rateProp.setValue(rateDoc);
@@ -615,7 +615,7 @@ var rateProp = rating.property("Source Text");
         subscribe.property("Effects").property("Glow").property(12).setValue([0,0,0,0]);
         subscribe.property("Effects").property("Glow").property(13).setValue([0,0,0,0]);
         
-        subscribe.property("Transform").property("Position").setValue([51,580]);
+        subscribe.property("Transform").property("Position").setValue([351,580]);
         subscribe.property("Transform").property("Scale").setValue([79,79]);
         subscribe.property("Transform").property("Rotation").setValue(-13);
         
@@ -626,11 +626,12 @@ var rateProp = rating.property("Source Text");
     //numberHolder
     function createNumHolder(){
         var numHolder = cur.layers.addText();
+        numHolder.duration = 18.5;
+        numHolder.applyPreset(prePath);
         // Holds total for use in end bumper
        numHolder.name = "Number Holder";
         var rateProp = numHolder.property("Source Text");
         var rateDoc = rateProp.value;
-        rateDoc.resetCharStyle();
         rateDoc.font = "TradeGothic LT Bold";
         rateDoc.fontSize = 160;
         rateDoc.justification = ParagraphJustification.CENTER_JUSTIFY;
@@ -672,9 +673,9 @@ var rateProp = rating.property("Source Text");
        var numComp = cur.layers.precompose(numSelection, "Number PreComp", true);
         numComp.width = 1920;
         numComp.height = 1080;
-        
+        numComp.duration = 18.5
         numComp.comment = "numComp";
-     
+       
         }  
     
     //text
@@ -692,8 +693,7 @@ var rateProp = rating.property("Source Text");
        var textComp = cur.layers.precompose(textSelection, "Text PreComp", true);
         textComp.width = 1920;
         textComp.height = 1080;
-        textComp.duration = 16.5;
-      //  textComp.property("Transform").property("Position").setValue([960,540]);
+        textComp.duration = 18.5;
         }
     
   
@@ -746,15 +746,9 @@ var rateProp = rating.property("Source Text");
                 }
             }        
         subLogo.moveToEnd();
-        subLogo.property("Transform").property("Scale").setValue([44,44]);
-        subLogo.property("Transform").property("Position").setValue([264,495,0]);
         subLogo.parent = subComp.layer(1);
-               
-          /*    for (i=0;i<a.numItems;i++){
-                    if (a.item(i).name == "Subscribe Logo"){
-                        a.item(i).copyToComp(subComp);
-                        }
-                    }*/
+        subLogo.property("Transform").property("Scale").setValue([50,50]);
+        subLogo.property("Transform").property("Position").setValue([-3,-44,0]);
         }
     
     
@@ -775,13 +769,7 @@ var rateProp = rating.property("Source Text");
                var endComp = cur.layers.precompose(endSelection, "End PreComp", true);
                endComp.width = 1920;
                endComp.height = 1080;
-               endComp.duration = currentFormatToTime("00:00:16:10", 24,true);
-               /*
-                for (i=0;i<a.numItems;i++){
-                    if (a.item(i).comment == "CLIP"){
-                        a.item(i).copyToComp(endComp);
-                        }
-                    }*/
+               endComp.duration = currentFormatToTime("00:00:18:10", 24,true);
                
         }
     
@@ -796,9 +784,7 @@ function textEffects(){
         if (a.item(j).name == "Text PreComp"){
             var textCompLocal = a.item(j);
             }
-        //else if (a.item(j).name == "numComp"){
-       //    var numCompLocal = a.item(j);
-        //    }
+
         }
 
         for (k=1; k<=cur.numLayers;k++){
@@ -808,8 +794,7 @@ function textEffects(){
                 }
             }
     
-  //  var numCompLocal = cur.layer(1).copyToComp(textCompLocal);
-   // cur.layer(1).remove();
+
     var glowBLocal = textCompLocal.layer(2);
     var glowALocal = textCompLocal.layer(3); 
     var numberLocal = textCompLocal.layer(6);
@@ -830,9 +815,11 @@ function textEffects(){
     totalLocal.trackMatteType = TrackMatteType.ALPHA;
     rateTextLocal.trackMatteType = TrackMatteType.ALPHA;
     
+   
+    
     rateTextLocal.property("Transform").property("Position").setValue([640,620]);
     rateTextLocal.property("Transform").property("Anchor Point").setValue([250,0]);
-    totalLocal.property("Transform").property("Position").setValue([960,382]);
+    totalLocal.property("Transform").property("Position").setValue([960,484]);
     
     totalLocal.Effects.addProperty("Glow");
             totalLocal.property("Effects").property("Glow").property(1).setValue(2);
@@ -871,6 +858,7 @@ if (x >= 1 && x < 10){\
          rateTextLocal.property("Transform").property("Opacity").setValueAtTime(10,100);
          rateTextLocal.property("Transform").property("Opacity").setValueAtTime(11,0);
     
+     textCompLocal.layer(2).property("Transform").property("Position").setValue([960,374]);
 }
 
 
@@ -1004,12 +992,13 @@ function endEffects(){
   bMatte.trackMatteType = TrackMatteType.ALPHA;
   bMatte.property("Transform").property("Position").setValue([667,400]);
   
+  
   endCompLocal.motionBlur = true;
   var sub = endCompLocal.layer(2);
   sub.motionBlur = true;
   sub.property("Transform").property("Position").setValueAtTime(0,[960,1400,0]);
   sub.property("Transform").property("Position").setValueAtTime(10.5,[960,1400,0]);
-  sub.property("Transform").property("Position").setValueAtTime(11,[960,860,0]);
+  sub.property("Transform").property("Position").setValueAtTime(11,[960,700,0]);
   
    clips.property("Transform").property("Opacity").setValueAtTime(10.5,0);
    clips.property("Transform").property("Opacity").setValueAtTime(12,100);
@@ -1020,15 +1009,15 @@ function endEffects(){
    endCompLocal.layer(7).property("Transform").property("Scale").setValue([115,115]);   
    
    endCompLocal.layer(8).property("Transform").property("Position").setValueAtTime(9,[960,540,0]);
-   endCompLocal.layer(8).property("Transform").property("Position").setValueAtTime(10.5,[440,150,0]);
+   endCompLocal.layer(8).property("Transform").property("Position").setValueAtTime(10.5,[350,150,0]);
    endCompLocal.layer(8).property("Transform").property("Scale").setValueAtTime(9,[100,100]);
-   endCompLocal.layer(8).property("Transform").property("Scale").setValueAtTime(10.5,[50,50]);
+   endCompLocal.layer(8).property("Transform").property("Scale").setValueAtTime(10.5,[75,75]);
    
    var txt = endCompLocal.layer(3);
    txt.property("Transform").property("Position").setValueAtTime(9,[960,860,0]);
-   txt.property("Transform").property("Position").setValueAtTime(10.5,[440,260,0]);
+   txt.property("Transform").property("Position").setValueAtTime(10.5,[350,400,0]);
    txt.property("Transform").property("Scale").setValueAtTime(9,[100,100]);
-   txt.property("Transform").property("Scale").setValueAtTime(10.5,[50,50]);
+   txt.property("Transform").property("Scale").setValueAtTime(10.5,[75,75]);
    
    for (i=1;i<a.numItems;i++){
        if (a.item(i).name == "End Bumper Grid"){
@@ -1043,6 +1032,9 @@ function endEffects(){
     gridLocal.property("Transform").property("Opacity").setValueAtTime(12,100);
     gridLocal.Effects.addProperty("Linear Color Key");
     gridLocal.property("Effects").property("Linear Color Key").property(3).setValue([0,0,0]);
+   
+    endCompLocal.layer(8).startTime = -4;
+    endCompLocal.layer(6).startTime = -3;
    
  }
 
@@ -1124,6 +1116,22 @@ function checkSettings(){
     $.writeln("Any chance that worked?");
     }
 }
+
+function clipCheck(){
+    
+    var doesExist = false;
+   for (i = 1; i <= a.numItems; i++){
+        if (a.item(i).name == "End Clip 6") doesExist = true;
+        }
+        try{
+            if (!doesExist) throw "Not enough end clips!";
+         }
+           catch (e){
+               alert(e);
+           }
+       $.writeln(doesExist);
+        return doesExist;
+    }
 
 /********************************************
     onClick controllers
